@@ -21,7 +21,7 @@ from dotenv import load_dotenv
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Define la ruta absoluta a la carpeta de imágenes
-IMAGE_FOLDER = os.path.join(BASE_DIR, 'apps', 'static', 'img')
+IMAGE_FOLDER = os.path.join(BASE_DIR, 'static', 'images')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
@@ -45,6 +45,32 @@ AWS_S3_REGION_NAME = 'us-east-2'
 AWS_DEFAULT_ACL = 'public-read'
 USE_I18N = True
 
+# Api keys of mercadopagos
+MERCADOPAGO_URL = "https://api.mercadopago.com/v1/payments/"
+MERCADOPAGO_PUBLIC_KEY = "APP_USR-3631e183-eff4-474e-8f32-704eccc16578"
+MERCADOPAGO_ACCESS_TOKEN = "APP_USR-1611010299166741-092904-c7a74b63ba851707b3925261263f3ed4-652583311"
+MERCADOPAGO_CLIENT_ID = "1611010299166741"
+MERCADOPAGO_CLIENT_SECRET = "CCrznaGLOIf33iM6arHjHFP5hlhv7FAv"
+""" 
+if DEBUG:
+    MERCADOPAGO_PUBLIC_KEY = os.environ.get("MERCADOPAGO_PUBLIC_KEY_TEST")
+    MERCADOPAGO_ACCESS_TOKEN = os.environ.get("MERCADOPAGO_ACCESS_TOKEN_TEST") """
+
+
+# Api keys of wompi
+WOMPI_PUBLIC_KEY = os.environ.get("WOMPI_PUBLIC_KEY_PROD")
+WOMPI_PRIVATE_KEY = os.environ.get("WOMPI_PRIVATE_KEY_PROD")
+
+if DEBUG:
+    WOMPI_PUBLIC_KEY = os.environ.get("WOMPI_PUBLIC_KEY_TEST")
+    WOMPI_PRIVATE_KEY = os.environ.get("WOMPI_PRIVATE_KEY_TEST")
+
+
+# Api keys of epayco
+EPAYCO_PUBLIC_KEY = os.environ.get("EPAYCO_PUBLIC_KEY_PROD")
+
+if DEBUG:
+    EPAYCO_PUBLIC_KEY = os.environ.get("EPAYCO_PUBLIC_KEY_TEST")
 
 # Application definition
 
@@ -55,8 +81,20 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    'apps',
-    'ckeditor'
+    "django.contrib.humanize",
+    "django_extensions",
+    "rangefilter",
+    "sorl.thumbnail",
+    "storages",
+    "octavia",
+    "octavia.apps",
+    "octavia.apps.clientes",
+    "octavia.apps.inventario",
+    "octavia.apps.ventas",
+    "octavia.apps.navegacion",
+    "django_celery_results",
+    "django_celery_beat",
+    "ckeditor"
 ]
 
 MIDDLEWARE = [
@@ -95,9 +133,10 @@ WSGI_APPLICATION = "octavia.wsgi.application"
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
+        #"ENGINE": "django.db.backends.sqlite3",
         #"NAME": BASE_DIR / "db.sqlite3",
-        # 'ENGINE': 'django.db.backends.postgresql',
+        #'ENGINE': 'django.db.backends.postgresql',
+        'ENGINE': 'django.db.backends.mysql',
         'NAME': os.getenv('DB_NAME'),
         'USER': os.getenv('DB_USER'),
         'PASSWORD': os.getenv('DB_PASSWORD'),
@@ -141,13 +180,15 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
-STATIC_URL = "static/"
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+STATIC_ROOT = os.path.join(BASE_DIR, "static")
+STATIC_URL = "/static/"
+
+MEDIA_ROOT = "uploads"
 
 # Extra places for collectstatic to find static files.
-STATICFILES_DIRS = (os.path.join(BASE_DIR, "apps/static/"),)
+STATICFILES_DIRS = (os.path.join(BASE_DIR, "static"),)
 
 try:
     from .local_settings import *  # noqa

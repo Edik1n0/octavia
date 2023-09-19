@@ -1,0 +1,233 @@
+{% load thumbnail octavia_tags humanize %}
+<div class="product__detail">
+    <div class="container">
+
+        <div class="product__detail--body">
+            <div class="product__detail--description">
+
+                <div class="products__detail--rating">
+                    <div class="products__detail--stars">
+                        {% for estrellas in producto.calificacion_cantidad %}
+                        <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg"
+                            xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 511 511"
+                            style="enable-background:new 0 0 511 511;" xml:space="preserve">
+                            <path class="st0" d="M509.67,196.02c-3.35-10.35-12.52-17.7-23.38-18.67L338.8,163.95L280.48,27.44c-4.3-10-14.09-16.48-24.98-16.48
+                                                        c-10.88,0-20.67,6.48-24.98,16.5l-58.32,136.48L24.69,177.34c-10.84,1-19.99,8.33-23.36,18.67c-3.36,10.35-0.26,21.7,7.94,28.85
+                                                        l111.48,97.77L87.89,467.45c-2.41,10.65,1.73,21.65,10.56,28.04c4.75,3.43,10.3,5.18,15.91,5.18c4.83,0,9.62-1.3,13.92-3.88
+                                                        l127.22-76.04l127.18,76.04c9.31,5.6,21.04,5.09,29.85-1.3c8.84-6.41,12.97-17.42,10.56-28.04l-32.87-144.81l111.48-97.75
+                                                        C509.9,217.71,513.03,206.38,509.67,196.02z" />
+                        </svg>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <form id="form-detail-products" method="POST" action="{% url 'checkout' %}">
+                {% csrf_token %}
+            <div class="product__detail--info">
+                <div class="container">
+                    <div class="info__prices">
+                        <div class="info__prices--basic">
+                            <!-- Precio normal -->
+                            <div class="div-box-price class_producto_costo">
+                                {% if producto.descuento_principal > 0 and producto.descuento_unidad > 0 %}
+                                    <p class="products__info--price-discount">$ {{ producto.costo|floatformat:"0"|intcomma }} COP</p>
+                                    <p class="product__detail--price">$ {{ producto.descuento_unidad|floatformat:"0"|intcomma }} COP</p>
+                                {% else %}
+                                    <p class="product__detail-price">$ {{ producto.costo|floatformat:"0"|intcomma }} COP</p>
+                                {% endif %}
+                                <p class="products__detail--paragraph">{{ producto.descripcion_no_prefer|safe }}</p>
+                                <div style="width: 30%;">
+                                    {% if not producto.cantidad %}
+                                        <p class="products__detail--paragraph">No esta disponible</p>
+                                    {% else %}
+                                        <input type="number" min="0" value="0" name="quantity" id="cantidad-{{ producto.id }}" class="form-control">
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            {% if not producto.by_inactive_price_aditional %}
+                                <div class="div-box-price class_producto_costo_adicional">
+                                    {% if producto.descuento_principal > 0 and producto.descuento_caja > 0 %}
+                                        <p class="products__info--price-discount">$ {{ producto.costo_adicional|floatformat:"0"|intcomma }} COP</p>
+                                        <p class="product__detail--price">$ {{ producto.descuento_caja|floatformat:"0"|intcomma }} COP</p>
+                                    {% else %}
+                                        <p class="product__detail-price">$ {{ producto.costo_adicional|floatformat:"0"|intcomma }} COP</p>
+                                    {% endif %}
+                                    <p class="products__detail--paragraph">{{ producto.descripcion_adicional|safe }}</p>
+                                    <div style="width: 30%;" >
+                                        {% if not producto.cantidad or not producto.cantidad_cajas %}
+                                            <p class="products__detail--paragraph">No esta disponible</p>
+                                        {% else %}
+                                            <input type="number" min="0" value="0" name="quantity_box" id="cantidad_cajas-{{ producto.id }}" class="form-control">
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            {% endif %}
+
+                            {% if not producto.by_inactive_price_octavia %}
+                            <div class="div-box-price class_producto_costo_octavia">
+                                {% if producto.descuento_principal > 0 and producto.descuento_mayor > 0 %}
+                                    <p class="products__info--price-discount">$ {{ producto.costo_octavia|floatformat:"0"|intcomma }} COP</p>
+                                    <p class="product__detail--price">$ {{ producto.descuento_mayor|floatformat:"0"|intcomma }} COP</p>
+                                {% else %}
+                                    <p class="product__detail-price">$ {{ producto.costo_octavia|floatformat:"0"|intcomma }} COP</p>
+                                {% endif %}
+                                <p class="products__detail--paragraph">{{ producto.descripcion_prefer|safe }}</p>
+                                <div style="width: 30%;" >
+                                    {% if not producto.cantidad or not producto.cantidad_cajas_prefer %}
+                                        <p class="products__detail--paragraph">No esta disponible</p>
+                                    {% else %}
+                                        <input type="number" min="0" value="0" name="quantity_box" id="cantidad_xmayor-{{ producto.id }}" class="form-control">
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% endif %}
+
+                            
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+
+                <div class="form-group">
+                    {% if producto.cantidad > 24 %}
+                        <p class="products__detail--paragraph">{{ producto.cantidad }} disponibles</p>
+                    {% else %}
+                        <p class="products__detail--paragraph" style="color: red;">{{ producto.cantidad }} disponibles</p>
+                    {% endif %}
+                    <label class="product__detail-quantity-title" for="quantity">Especificaciones para la compra</label>
+                    <input type="text" name="specs" id="especificaciones-{{ producto.id }}" class="form-control">
+                </div>
+
+            <div class="product__detail--options">
+
+                <div class="detail__options--chart">
+                    <button 
+                        class="products__info--btn add-carrito"
+                        data-product-serialize="{% json_serialize producto %}">
+                        <p class="icon-basket"></p>
+                        Añadir
+                    </button>
+                    <script type="text/javascript" id="addToCartButton">
+                        $('#$addToCartButton').click(function() {
+                          fbq('track', 'Purchase', {currency: "COP", value: 30.000});
+                        });
+                    </script>
+                </div>
+
+                <div class="detail__options--chart">
+                        <input type="hidden" id="validate-buy" name="validate-buy" value="1"/>
+                        <input type="hidden" id="productos-checkout-detail" name="productos-checkout-detail" />
+                        <input type="hidden" value="{% json_serialize producto %}" id="data-product-serialize-detail" name="data-product-serialize-detail" />
+                        <button
+                            class="products__info--btn buy-carrito" type="submit">
+                            <p class="icon-basket"></p>
+                            Comprar
+                        </button>
+                </div>
+
+                <div class="detail__options--face">
+                    <!-- <a href="javascript: void(0);" onclick="window.open('https://www.facebook.com/sharer/sharer.php?u={% if request.is_secure %}https://{% else %}http://{% endif %}{{ request.META.HTTP_HOST }}{% url 'producto_detalle' producto.id %}','ventanacompartir', 'toolbar=0, status=0, width=650, height=450');"> -->
+                    <a target="_blank" style="text-decoration: none;" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fwww.octaviacolombia.com%2Fproductos%2F{{ producto.id }}&amp;src=sdkpreparse" class="fb-xfbml-parse-ignore" alt="Facebook Compartir">
+                        <img src="/static/images/facebook.png" style="cursor: pointer;" data-href="{% url 'producto_detalle' producto.id %}" data-layout="button_count" data-size="large">
+                    </a>
+                    <a  href="whatsapp://send?text={% if request.is_secure %}https://{% else %}http://{% endif %}{{ request.META.HTTP_HOST }}{% url 'producto_detalle' producto.id %}"
+                    data-action="share/whatsapp/share" target="_blank">
+                        <img src="/static/images/whatsapp.png" alt="">
+                    </a>
+                </div>
+            </div>
+            <div class="boton-comentarios">
+                <button type="button" class="btn comment-product__btn" data-toggle="modal" data-target="#exampleModalComment">
+                    Ver comentarios del {{ producto.nombre|safe }}
+                    </button>
+            </div>
+
+                </form>
+
+        </div>
+
+        <div class="product__detail--carousel">
+            <div class="product__detail--carousel-list owl-carousel" id="product-slider">
+                {% if producto.url_video %}
+                    <div class="product__detail--carousel-item">
+                        <a href="https://www.youtube.com/embed/{{ producto.url_video|safe }}?controls=0&autoplay=1&mute=0&loop=1" data-fancybox="gallery" data-caption="{{ producto.nombre|safe }}"><iframe width="560" height="315" src="https://www.youtube.com/embed/{{ producto.url_video|safe }}?controls=0&autoplay=1&mute=0&loop=1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></a>
+                    </div>
+                {% endif %}
+                {% if producto.fotos %}
+                    {% for foto in producto.fotos %}
+                        <div class="product__detail--carousel-item">
+                            <a href="{{ foto.imagen.url }}" data-fancybox="gallery" data-caption="{{ producto.nombre|safe }}"><img 
+                                class="d-block w-100" 
+                                src="{{ foto.imagen.url }}"
+                                height="440"
+                                width="666"
+                                alt="{{ producto.nombre|safe }}"
+                            ></a>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="comment-product">
+        <div class="div-description-product">
+            <p class="products__detail--paragraph">{{ producto.descripcion|safe }}</p>
+        </div>
+    </div>
+                
+    <div class="modal fade" id="exampleModalComment" tabindex="-1" role="dialog" aria-labelledby="exampleModalCommentLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Comentarios del {{ producto.nombre|safe }}</h3>
+                <p>
+                    Mira las opiniones y comentarios que ha generado el {{ producto.nombre|safe }}
+                </p>
+            </div>
+            <div class="modal-body">
+                <div class="pdetail__comment">
+            
+                    <div class="pdetail__comment--body">
+            
+                        <div class="comment__hall">
+                            {% for comentario in producto.comentarios %}
+                                <div class="user__comment">
+                                    <div class="comment__hall--title">
+                                        <p><strong>{{ comentario.nombre_cliente|safe }} </strong>Comenta:</p>
+                                    </div>
+            
+                                    <div class="comment__hall--msg">
+                                        <p><em>{{ comentario.comentario }}</em></p>
+                                    </div>
+            
+                                    <div class="comment__hall--info">
+                                        <p>En <strong>{{ comentario.ciudad }}</strong> a las <em>{{ comentario.fecha }}</em></p>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        <div class="pdetail__comment--form">
+                            <div class="comment__form--title">
+                                <h4>Déjanos tu comentario</h4>
+                            </div>
+                            {% include 'base/messages.html' %}
+                            {% include 'modules/form/comments_form.html' %}
+                        </div>
+            
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+</div>

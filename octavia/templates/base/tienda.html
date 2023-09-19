@@ -1,0 +1,21 @@
+{% extends "base/base.html" %}
+
+{% block extracss %}
+{{ block.super }}
+
+{% endblock %}
+
+{% block content %}
+{% include "modules/inner/inner.html" %}
+{% include "modules/marcas/marcas.html" %}
+<div class="canvas-home" style="padding-top: 40px;">
+    {% include "modules/introductions/intro-tienda.html" %}
+    {% include "modules/products/products.html" %}
+    {% include "modules/highlights/highlights.html" %}
+</div>
+
+{% endblock %}
+
+{% block extrajs %}
+{{ block.super }}
+{% endblock %}

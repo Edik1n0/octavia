@@ -1,7 +1,6 @@
 **/__pycache__
 uploads
-obj
+.env
 cache
 node_modules
 local_settings.py
-/octavia/.env

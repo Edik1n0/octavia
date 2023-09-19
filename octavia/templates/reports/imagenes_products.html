@@ -1,0 +1,50 @@
+{% load static octavia_tags %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Reporte de Venta</title>
+</head>
+<style type="text/css">
+
+    body{
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+        height: 600px;
+        width: 100%;
+    }
+
+    .div-img{
+        margin: 70px;
+        vertical-align: center;
+    }
+
+    .img{
+        width: 220px;
+        height: 244px;
+        border-radius: 8px;
+        max-width: 100%;
+        page-break-before: "always";
+        margin: 2px;
+    }
+</style>
+<body style="background-image: url(https://octavia-col-bucket.s3.us-east-2.amazonaws.com/img_reports/fondo.jpg)">
+    <div class="div-img">
+        {% for imagen in data_imagenes %}
+            {% if imagen.imagen %}
+                <img style="height: 500px; width: 500px;margin-top: 7em;" title="{{ imagen.nombre }}" alt="blah" src="{{ imagen.imagen.url }}" />
+                {% if imagen.nombre %}
+                    <h3 style="text-align: center;">{{ imagen.nombre }}</h3>
+                {% endif %}
+                {% if imagen.producto.codigo %}
+                    <p style="text-align: center;">Referencia del Producto: {{ imagen.producto.codigo }}</p>
+                {% endif %}
+                {% if imagen.descripcion %}
+                    <p style="text-align: center;">{{ imagen.descripcion }}</p>
+                {% endif %}
+            {% endif %}
+        {% endfor %}
+    </div>
+</body>
+</html>
+    

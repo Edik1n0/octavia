@@ -1,0 +1,39 @@
+{% extends "base/base.html" %}
+{% block ogtitle %}{{ pageogtitle }}{% endblock %}
+{% block ogdesc %}{{ pageogdesc }}{% endblock %}
+{% block oguimg %}{{ pageogimg }}{% endblock %}
+{% block ogurls %}{{ pageogurl }}{% endblock %}
+{% block ogurlimg %}{{ pageogurlsec }}{% endblock %}
+
+{% block mdescription %}{{ pagemetadesc }}{% endblock %}
+{% block keywords %}{{ pagekeywords }}{% endblock %}
+{% block title %}{{ pagemetatitle }}{% endblock %}
+{% block extracss %}
+{{ block.super }}
+
+{% endblock %}
+
+{% block content %}
+    {% include "modules/background/background.html" %}
+    {% include "modules/marcas/marcas.html" %}
+    {% include "modules/canvas/canvas-home.html" %}
+{% endblock %}
+
+{% block extrajs %}
+{{ block.super }}
+<script>
+document.addEventListener('DOMContentLoaded', function(){ 
+    const filterCats = $('#id_filter_product');
+    var filterElements = $('.products__items');
+    filterCats.on('change', function(e){
+        filterElements.hide()
+        const actualValue = e.currentTarget.value
+        let filteredElements = filterElements.filter(function(){
+            return $(this).data('category') === actualValue
+        })
+        if (actualValue === 'all') filteredElements = filterElements;
+        filteredElements.show()
+    })
+}, false);
+</script>
+{% endblock %}

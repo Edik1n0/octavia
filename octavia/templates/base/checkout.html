@@ -1,0 +1,115 @@
+{% extends "base/base.html" %}
+{% load octavia_tags humanize %}
+
+{% block extracss %}
+{{ block.super }}
+
+{% endblock %}
+
+{% block content %}
+<div class="container" style="margin-top: 140px;">
+    <div class="card">
+        <div class="card-header">
+          <div class="row justify-content-between">
+            <div class="col-md-auto">
+              <h5 class="mb-3 mb-md-0">Carrito ( {{ products|length }} Items )</h5>
+            </div>
+            <div class="col-md-auto">
+                <div class="d-flex">
+                  <a class="btn btn-checkout border-300 mr-2" href="{% url 'home' %}"> <span class="fas fa-chevron-left mr-1" data-fa-transform="shrink-4"></span>Continuar Comprando</a>
+                  <form id="form-checkout-up" method="POST" action="{% url 'datos_cliente' %}">
+                    {% csrf_token %}
+                    <input type="hidden" id="productos-payment-1" name="productos-payment-1">
+                    <input type="hidden" value="{{ total }}" id="total_productos" name="total_productos" />
+                    <button class="btn btn-sm btn-checkout" type="submit">Finalizar Compra</button>
+                </form>
+              </div>
+          </div>
+        </div>
+        <div class="table-responsive fs--1">
+            <table class="table table-striped border-bottom">
+              <thead class="bg-200 text-900">
+                <tr>
+                  <th class="border-0">Productos</th>
+                  <th class="border-0 text-center">Cantidad</th>
+                  <th class="border-0 text-right">Precio Unitario</th>
+                  <th class="border-0 text-right">Precio Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for item in products %}
+                  {% if item.quantity > 0 %}
+                    <tr>
+                      <td class="align-middle">
+                        <h6 class="mb-0 text-nowrap">{{ item.title }} {{item.description_no_prefer }}</h6>
+                      </td>
+                      <td class="align-middle text-center">{{ item.quantity }}</td>
+                      <td class="align-middle text-right">${{ item.unit_price|intcomma }} COP</td>
+                      <td class="align-middle text-right">${% multiply item.quantity item.unit_price %} COP</td>
+                      <td><a style="color:red;" onclick="eliminarItem(this, {% json_serialize item %}, 0)" href="#"  class="icon-trash-empty"></a></td>
+                    </tr>
+                    {% endif %}
+
+                    {% if item.quantity_box > 0 %}
+                    <tr>
+                      <td class="align-middle">
+                        <h6 class="mb-0 text-nowrap">{{ item.title }} {{item.description_aditional }}</h6>
+                      </td>
+                      <td class="align-middle text-center">{{ item.quantity_box }}</td>
+                      <td class="align-middle text-right">${{ item.unit_price_box|intcomma }} COP</td>
+                      <td class="align-middle text-right">${% multiply item.quantity_box item.unit_price_box %} COP</td>
+                      <td><a style="color:red;" onclick="eliminarItem(this, {% json_serialize item %}, 1)" href="#"  class="icon-trash-empty"></a></td>
+                    </tr>
+                    {% endif %}
+
+                    {% if item.quantity_xmayor > 0 %}
+                      <tr>
+                        <td class="align-middle">
+                          <h6 class="mb-0 text-nowrap">{{ item.title }} {{item.description_prefer }}</h6>
+                        </td>
+                        <td class="align-middle text-center">{{ item.quantity_xmayor }}</td>
+                        <td class="align-middle text-right">${{ item.unit_price_xmayor|intcomma }} COP</td>
+                        <td class="align-middle text-right">${% multiply item.quantity_xmayor item.unit_price_xmayor %} COP</td>
+                        <td><a style="color:red;" onclick="eliminarItem(this, {% json_serialize item %}, 2)" href="#"  class="icon-trash-empty"></a></td>
+                      </tr>
+                    {% endif %}
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+
+          <div class="row no-gutters justify-content-end">
+            <div class="col-auto">
+              <table class="table table-sm table-borderless fs--1 text-right">
+                <tr>
+                  <th class="text-900">Subtotal:</th>
+                  <td id="subtotal" class="font-weight-semi-bold">${{ total|intcomma }} COP </td>
+                </tr>
+                <tr class="border-top">
+                  <th class="text-900">Total:</th>
+                  <input type="hidden" id="total_buy" name="total_buy" value="{{ total }}">
+                  <td id="total" class="font-weight-semi-bold">${{ total|intcomma }} COP</td>
+                </tr>
+              </table>
+            </div>
+          </div>
+        
+        <form id="form-checkout-down" method="POST" action="{% url 'datos_cliente' %}">
+            {% csrf_token %}
+            {% if validate_buy %}
+              <input type="hidden" id="validate_buy"  name="validate_buy">
+            {% endif %}
+            <input type="hidden" id="productos-payment-2"  name="productos-payment-2">
+            <input type="hidden" value="{{ total }}" id="total_productos" name="total_productos" />
+            <div class="card-footer bg-light d-flex justify-content-end">
+              <button class="btn btn-sm btn-checkout" type="submit">Finalizar Compra</button>
+            </div>
+        </form>
+        
+            
+        </div>
+      </div>
+</div>
+{% endblock %}
+
+

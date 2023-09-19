@@ -1,0 +1,208 @@
+{% load static octavia_tags %}
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Reporte de Venta</title>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+</head>
+<style type="text/css">
+    @page {
+        size: letter landscape;
+        margin: 1cm;
+    }
+
+    body {
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+        height: 600px;
+        width: 100%;
+        font-size: 12px;
+    }
+
+    .div-margin {
+        margin: 0.5em;
+    }
+
+    .div-start {
+        display: flex;
+        flex-direction: row;
+        align-items: flex-start;
+    }
+
+    .div-between {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-around;
+    }
+
+    .p-title {
+        font-family: Montserrat;
+        font-style: normal;
+        font-weight: 300;
+        font-size: 20px;
+        line-height: 38px;
+    }
+
+    .p-subtitle {
+        font-family: Montserrat;
+        font-style: normal;
+        font-weight: normal;
+        font-size: 16px;
+        line-height: 24px;
+    }
+
+    .hr-separated-horizontal {
+        border: none;
+        border-color: black;
+        border-top: 7px solid;
+        width: 48em;
+    }
+
+    .content-table {
+        border-collapse: collapse;
+        margin: 20px 0;
+        font-size: 0.9em;
+        min-width: 250px;
+        margin-left: 2em;
+    }
+
+    .content-table thead tr {
+        background-color: #cc98c7;
+        color: white;
+        text-align: left;
+        font-weight: bold;
+    }
+
+    .content-table th,
+    .content-table td {
+        padding: 15px 18px;
+    }
+
+    .content-table tbody tr {
+        border-bottom: 1px solid #000000;
+    }
+
+    .content-table tbody tr:nth-of-type(even) {
+        background-color: #f3f3f3;
+    }
+
+    .content-table tbody tr:last-of-type {
+        border-bottom: 2px solid #cc98c7;
+    }
+</style>
+
+<body style="background-image: url(https://octavia-col-bucket.s3.us-east-2.amazonaws.com/img_reports/fondo.jpg)">
+
+    <div class="div-start">
+        <div class="div-margin">
+            <img src="https://octavia-col-bucket.s3.us-east-2.amazonaws.com/img_reports/logo.png" alt="Logo" />
+
+        </div>
+
+        <div class="div-margin" style="margin-top:2em">
+            <hr class="hr-separated-horizontal">
+        </div>
+    </div>
+
+    <div>
+        <p style="text-align: right; margin-right: 2em;">
+            <span class="p-title">Resumen de Compra No {{ reference }}</span><br>
+            <span class="p-subtitle">{{ date_now }}</span><br>
+            <span class="p-subtitle">{{ name_client }} C.C# {{ document_client }}</span><br>
+            <span class="p-subtitle"><strong>Dirección:</strong> {{ address }}</span><br>
+            <span class="p-subtitle"><strong>{{ location }}</strong></span><br>
+            <span class="p-subtitle"><strong>Teléfono:</strong> {{ phone }}</span><br>
+        </p>
+    </div>
+
+    <div>
+        <table class="content-table">
+            <thead>
+                <tr>
+                    <th>
+                        Ref.
+                    </th>
+                    <th>
+                        Cant.
+                    </th>
+                    <th>
+                        Producto
+                    </th>
+                    <th>
+                        Unidad(es) por Kit
+                    </th>
+                    <th>
+                        Total Unidades
+                    </th>
+                    <th>
+                        Precio Unitario
+                    </th>
+                    <th>
+                        Total
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in products %}
+                <tr>
+                    <td>
+                        {{ product.producto.codigo }}
+                    </td>
+                    <td>
+                        {{ product.cantidad }}
+                    </td>
+                    <td>
+                        {{ product.producto.nombre|safe }}
+                    </td>
+                    <td>
+                        {% if product.by_venta_caja %}
+                        {{ product.producto.cantidad_cajas }}
+                        {% else %}
+                        {% if product.by_mayor %}
+                        {{ product.producto.cantidad_cajas_prefer }}
+                        {% else %}
+                        1
+                        {% endif %}
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if product.by_venta_caja %}
+                        {% multiply product.cantidad product.producto.cantidad_cajas %}
+                        {% else %}
+                        {% if product.by_mayor %}
+                        {% multiply product.cantidad product.producto.cantidad_cajas_prefer %}
+                        {% else %}
+                        {% multiply product.cantidad 1 %}
+                        {% endif %}
+                        {% endif %}
+
+                    </td>
+                    <td>
+                        {{ product.precio }}
+                    </td>
+                    <td>
+                        {% multiply product.cantidad product.precio %}
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="6">
+                        Especificaciones: <strong>{{ product.especificaciones }}</strong>
+                    </td>
+                </tr>
+                {% endfor %}
+                <tr>
+                    <td colspan="5" style="text-align: right;">
+                        <strong>Total:</strong>
+                    </td>
+                    <td>
+                        {{ price }} COP
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+
+</html>

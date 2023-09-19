@@ -1,0 +1,51 @@
+{% extends "admin/base_site.html" %}
+{% load static humanize material %}
+
+{% block title %}Resumen de Ventas{% endblock %}
+
+{% block content %}
+
+
+<div class="app">
+    <div>
+        <div class="card card-summary">
+            <div class="card-content">
+                <h5 class="card-title">Total Registrado: $ {{ total|floatformat:"0"|intcomma }} COP - {{ cantidades }}
+                    Compras</h5>
+
+                <div class="results">
+
+                    <table id="result_list" class="highlight">
+                        <thead>
+                            <tr>
+
+                                {% for header in result_headers %}
+                                <th scope="col" class="column-number_document">
+                                    <div class="text">
+                                        <label>{{ header|capfirst }}</label>
+                                    </div>
+                                    <div class="clear"></div>
+                                </th>
+                                {% endfor %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for result in data %}
+                            <tr>
+                                <td>{{ result.id }}</td>
+                                <td>{{ result.cliente__nombre }}</td>
+                                <td>{{ result.referencia }}</td>
+                                <td>{{ result.total }}</td>
+                                <td>{{ result.fecha }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}
