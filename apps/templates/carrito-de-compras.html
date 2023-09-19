@@ -1,0 +1,40 @@
+{% extends 'base/index.html' %}
+
+{% block content %}
+
+<div class="carrito">
+    <div class="container migapan">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'index' %}">Inicio</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'tienda' %}">Tienda</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Carrito de compras</li>
+            </ol>
+        </nav>
+    </div>
+
+    <div class="container">
+        <div class="carrito">
+            <h3 class="carrito__title">Carrito de compras</h3>
+
+            {% if productos_en_carrito %}
+            <ul class="carrito__lista">
+                {% for producto in productos_en_carrito %}
+                <li class="carrito__item">
+                    <div class="carrito__producto">
+                        <img src="{{ producto.productimg.url }}" alt="{{ producto.productname }}">
+                        <div class="carrito__detalles">
+                            <h4>{{ producto.productname }}</h4>
+                            <p>Precio: ${{ producto.productprice|floatformat:2 }} COP</p>
+                        </div>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p>Tu carrito de compras está vacío.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

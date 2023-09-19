@@ -1,0 +1,114 @@
+{% extends 'base/index.html' %}
+{% block ogdesc %}{{ pageogdesc }}{% endblock %}
+{% block oguimg %}{{ pageogimg }}{% endblock %}
+{% block ogurls %}{{ pageogurl }}{% endblock %}
+{% block ogurlimg %}{{ pageogurlsec }}{% endblock %}
+
+{% block mdescription %}{{ pagemetadesc }}{% endblock %}
+{% block keywords %}{{ pagekeywords }}{% endblock %}
+{% block title %}{{ pagemetatitle }}{% endblock %}
+{% block content %}
+{% load static %}
+<div class="img__baner">
+    {% if pagebanner %}
+    <img src="{{ pagebanner.url }}" alt="{{ pagename }} Decortinas y Persianas" class="img__banner--img">
+    {% endif %}
+    {% if pagebannermov %}
+    <img src="{{ pagebannermov.url }}" alt="{{ pagename }} Decortinas y Persianas" class="img__banner--imgmov">
+    {% endif %}
+</div>
+<div class="tienda">
+    <div class="container migapan">
+        <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'index' %}">Inicio</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ pagename }}</li>
+            </ol>
+        </nav>
+    </div>
+
+    <div class="container">
+        <div class="tienda__header text-center">
+            <h1 class="tienda__header--title"><strong>{{ pagetitle }}</strong></h1>
+            <h2 class="tienda__header__subtitle">{{ pageslogan }}</h2>
+        </div>
+
+        <ul class="container tienda__listado">
+            {% for producto in productos %}
+            <li class="tienda__item">
+                <div class="card text-center" style="width: 18rem;">
+                    {% if producto.productimg %}
+                    <img src="{{ producto.productimg.url }}" class="card-img-top" alt="{{producto.productname}}">
+                    {% endif %}
+                    {% if producto.productdiscount > 0 %}
+                    <p class="producto__descuento"><strong>{{producto.productdiscount}}% dcto.</strong></p>
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title"><strong>{{producto.productname}}</strong></h5>
+                        {% if producto.productoldprice > 0 %}
+                        <div class="container card-price">
+                            <p class="producto_oldprice"><strong>Antes: </strong><i
+                                    class="oldprice">${{producto.productoldprice|floatformat:0}} COP</i></p>
+                            <p class="producto__newprice"><strong>Ahora: </strong><i
+                                    class="newprice">${{producto.productprice|floatformat:0}} COP</i>
+                            </p>
+                        </div>
+                        {% else %}
+                        <div class="container card-price">
+                            <p class="producto__else"><strong>Consulta precios vía <a href="https://bit.ly/wpdecortinas"
+                                        target="_blank" rel="nofollow" class="producto__else--wp">WhatsApp</a></strong>
+                            </p>
+                        </div>
+                        {% endif %}
+                        <div class="card-body--footer">
+                            <a class="button__product"
+                                href="{% url 'product_detail' producturl=producto.producturl %}">Ver más</a>
+
+                            <!-- Agregar al carrito -->
+                            <button type="submit" class="button__cart icon-cart-plus" id="agregarAlCarritoBtn"
+                                data-bs-toggle="modal" data-bs-target="#confirmacionModal"
+                                onclick="event.preventDefault();">
+                            </button>
+                        </div>
+
+                        <!-- Modal de confirmación -->
+                        <div class="modal fade" id="confirmacionModal" tabindex="-1"
+                            aria-labelledby="confirmacionModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h1 class="modal-title fs-5" id="confirmacionModalLabel">Agregar
+                                            {{producto.productname}} al carrito de compras</h1>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form action="" method="POST">
+                                            <div class="mb-3">
+                                                <label for="recipient-name" class="col-form-label">¿En qué talla la deseas?:</label>
+                                                <input type="text" class="form-control" id="recipient-name">
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="message-text" class="col-form-label">¿Quiéres más de una?:</label>
+                                                <input type="number" name="cantidad" min="0" max="20" value="0">
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary"
+                                            data-bs-dismiss="modal">Close</button>
+                                        <button type="button" class="btn btn-primary">Agregar al carrito</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% include 'partials/promo.html' %}
+
+{% endblock %}

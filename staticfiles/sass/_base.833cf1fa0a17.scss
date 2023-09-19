@@ -1,0 +1,53 @@
+html {
+    position: relative;
+}
+
+* {
+    font-family: 'Mulish', sans-serif;
+}
+
+
+body {
+    min-height: calc(100vh - 50px);
+    /* ajustar según la altura del footer */
+    position: relative;
+    margin: 0px;
+}
+
+.navbar {
+
+    .container-fluid {
+
+        .logo-menu {
+            width: 160px;
+        }
+
+        .navbar-right {
+            display: flex;
+            align-items: center;
+
+            .navbar-social {
+                .navbar-social--link {
+                    text-decoration: none;
+                    font-size: 32px;
+                    color: $Grey;
+                    margin-right: 20px;
+
+                    &:hover {
+                        transition: all .6s;
+                        color: $Yl;
+                    }
+                }
+            }
+        }
+    }
+}
+
+a {
+    color: black;
+    text-decoration: none;
+    &:hover {
+        transition: all .6s;
+        color: $Yl;
+    }
+}
