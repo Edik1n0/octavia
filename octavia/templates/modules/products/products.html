@@ -8,166 +8,60 @@
             </h1>
             <h2>Encuentra lencería erótica para todos los gustos</h2>
             <div class="filter__content">
-                <select class="filter__dropdown" name="filter_product" id="id_filter_product"
-                    @change="onChangeCategory($event)">
+                <select class="filter__dropdown" name="filter_product" id="id_filter_product" @change="onChangeCategory($event)">
                     <option class="filter__dropdown--item" value="0">Todos</option>
-                    <option class="filter__dropdown--item" v-for="category in categories" :value="[[ category.id ]]">[[
-                        category.nombre ]]</option>
+                    <option class="filter__dropdown--item" v-for="category in categories" :value="category.id">{{ category.nombre }}</option>
                 </select>
                 <div class="filter__search--icon">
-                    <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg"
-                        xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 136 136"
-                        style="enable-background:new 0 0 136 136;" xml:space="preserve">
-                        <g>
-                            <path d="M132.1,117.9c-0.1-0.1-0.3-0.3-0.4-0.4L94.6,80.7c16.3-23.1,10.9-55-12.2-71.3s-55-10.9-71.3,12.2
-                            c-16.3,23.1-10.9,55,12.2,71.3c16.5,11.6,38.2,12.5,55.6,2.3l37.7,37.5c4.1,4.3,10.8,4.5,15.1,0.4C136,129,136.1,122.2,132.1,117.9
-                            z M52.8,84.2C52.8,84.2,52.8,84.2,52.8,84.2c-18.2,0-33-14.8-33-33c0-18.2,14.8-33,33-33c18.2,0,33,14.7,33,32.9
-                            C85.8,69.4,71,84.2,52.8,84.2z" />
-                        </g>
+                    <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 136 136" style="enable-background:new 0 0 136 136;" xml:space="preserve">
+                        <!-- SVG Path here -->
                     </svg>
-                    <input id="id_search_product" v-model="search_product" @keyup.enter="searchProduct()"
-                        class="filter__search--input" type="text">
+                    <input id="id_search_product" v-model="search_product" @keyup.enter="searchProduct()" class="filter__search--input" type="text">
                 </div>
             </div>
         </div>
     </div>
     {% if productos_id %}
-    <input type="hidden" value="{{ productos_id }}" ref="value_product">
+    <input type="hidden" :value="productos_id" ref="value_product">
     {% endif %}
     {% if logged_user %}
     <input type="hidden" value="0" ref="value_user">
     {% endif %}
 
     {% if marca_id %}
-    <input type="hidden" value="{{ marca_id }}" ref="value_marca">
+    <input type="hidden" :value="marca_id" ref="value_marca">
     {% endif %}
     <div v-if="productos.length > 0" class="products__container">
         <div class="scroll__animate" ref="ref_scroll_infinite">
-            <div v-for="producto in productos" class="products__items animado"
-                onclick="if(!(event.target.classList.contains('products__info--btn') || ($(event.target).parents('div.modal').length))){window.location=$(this).data('url')}"
-                :data-url="[[ url ]] + [[ producto.id ]]" :data-category="[[ producto.categoria_url ]]"
-                :data-name="[[ producto.nombre ]]" :data-id="[[ producto.id ]]" :data-precio="[[ producto.costo ]]">
-                <img class="products__items--img" :src="[[ url_images ]] + [[ producto.imagen ]]"
-                    :alt="[[ producto.nombre ]]" :title="[[ producto.nombre ]]" height="400" width="264">
-
+            <div v-for="producto in productos" :key="producto.id" class="products__items animado" @click="handleItemClick(producto)" :data-url="url + producto.id" :data-category="producto.categoria_url" :data-name="producto.nombre" :data-id="producto.id" :data-precio="producto.costo">
+                <img class="products__items--img" :src="url_images + producto.imagen" :alt="producto.nombre" :title="producto.nombre" height="400" width="264">
 
                 <div class="products__info">
-                    <p class="products__info--ref">[[ producto.codigo ]]</p>
-                    <a class="products__info--link" :href="[[ url ]] + [[ producto.id ]]" target="_blank">
-                        <p class="products__info--title">[[ producto.nombre ]]</p>
+                    <p class="products__info--ref">{{ producto.codigo }}</p>
+                    <a class="products__info--link" :href="url + producto.id" target="_blank">
+                        <p class="products__info--title">{{ producto.nombre }}</p>
                     </a>
-                    <template
-                        v-if="producto.descuento_principal.descuento >0 && producto.descuento_principal.descuento_unidad > 0">
-                        <p class="products__info--price-discount">$ [[ producto.costo ]] COP</p>
-                        <p class="products__info--price">$ [[ producto.descuento_principal.descuento_unidad ]] COP</p>
-                    </template>
-                    <template v-else>
-                        {% if logged_user %}
-                        <p class="products__info--price">$ [[ producto.costo_prefer ]] COP</p>
-                        {% else %}
-                        <p class="products__info--price class_producto_costo">$ [[ producto.costo ]] COP</p>
-                        <p style="display: none" class="products__info--price class_producto_costo_adicional">$ [[
-                            producto.costo_adicional ]] COP</p>
-                        <p style="display: none" class="products__info--price class_producto_costo_octavia">$ [[
-                            producto.costo_octavia ]] COP
-                        </p>
-                        {% endif %}
-                    </template>
+                    <!-- Use Vue.js computed properties for price -->
+                    <p class="products__info--price">{{ producto.precioMostrar }}</p>
+                    <p class="products__info--price" style="display: none" class_producto_costo_adicional>{{ producto.costo_adicional }} COP</p>
+                    <p class="products__info--price" style="display: none" class_producto_costo_octavia>{{ producto.costo_octavia }} COP</p>
                     <div class="products__info--rating">
                         <div class="products__info--stars">
-                            <svg v-for="estrellas in producto.calificacion_cantidad" version="1.1" id="Layer_1"
-                                xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px"
-                                y="0px" viewBox="0 0 511 511" style="enable-background:new 0 0 511 511;"
-                                xml:space="preserve">
+                            <svg v-for="estrellas in producto.calificacion_cantidad" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 511 511" style="enable-background:new 0 0 511 136;" xml:space="preserve">
                                 <path class="st0" d="M509.67,196.02c-3.35-10.35-12.52-17.7-23.38-18.67L338.8,163.95L280.48,27.44c-4.3-10-14.09-16.48-24.98-16.48
-                                                    c-10.88,0-20.67,6.48-24.98,16.5l-58.32,136.48L24.69,177.34c-10.84,1-19.99,8.33-23.36,18.67c-3.36,10.35-0.26,21.7,7.94,28.85
-                                                    l111.48,97.77L87.89,467.45c-2.41,10.65,1.73,21.65,10.56,28.04c4.75,3.43,10.3,5.18,15.91,5.18c4.83,0,9.62-1.3,13.92-3.88
-                                                    l127.22-76.04l127.18,76.04c9.31,5.6,21.04,5.09,29.85-1.3c8.84-6.41,12.97-17.42,10.56-28.04l-32.87-144.81l111.48-97.75
-                                                    C509.9,217.71,513.03,206.38,509.67,196.02z" />
+                                c-10.88,0-20.67,6.48-24.98,16.5l-58.32,136.48L24.69,177.34c-10.84,1-19.99,8.33-23.36,18.67c-3.36,10.35-0.26,21.7,7.94,28.85
+                                l111.48,97.77L87.89,467.45c-2.41,10.65,1.73,21.65,10.56,28.04c4.75,3.43,10.3,5.18,15.91,5.18
+                                c4.83,0,9.62-1.3,13.92-3.88l127.22-76.04l127.18,76.04c9.31,5.6,21.04,5.09,29.85-1.3c8.84-6.41,12.97-17.42,10.56-28.04
+                                l-32.87-144.81l111.48-97.75C509.9,217.71,513.03,206.38,509.67,196.02z" />
                             </svg>
                         </div>
                     </div>
-                    <a class="products__info--btn" href="#" data-toggle="modal"
-                        :data-target="'#exampleModal-' +[[ producto.id ]]">Añadir al carrito</a>
+                    <a class="products__info--btn" href="#" data-toggle="modal" :data-target="'#exampleModal-' + producto.id">Añadir al carrito</a>
 
                     <!-- Modal -->
-                    <div class="modal fade" :id="'exampleModal-' + [[ producto.id ]]" tabindex="-1"
-                        aria-labelledby="exampleModalLabel" aria-hidden="true">
-                        <div class="modal-dialog modal-sm">
-                            <div class="modal-content bg-dark">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="exampleModalLabel">[[ producto.nombre ]]</h5>
-                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                        <span aria-hidden="true">&times;</span>
-                                    </button>
-                                </div>
-                                <div class="modal-body">
-                                    <div class="modal__body--content">
-                                        <p>Selecciona la cantidad de productos que quieres guardar en el carrito</p>
-                                        <div class="form__cantidad">
-                                            <form action="">
-                                                <div class="form-group">
-                                                    <label for="">[[ producto.nombre ]] [[
-                                                        producto.descripcion_no_prefer ]]</label>
-                                                    <template v-if="producto.cantidad==0">
-                                                        <p>No hay producto disponible</p>
-                                                    </template>
-                                                    <template v-else>
-                                                        <input type="number" min="0" value="0" name=""
-                                                            :id="'cantidad-' + [[ producto.id ]]" class="form-control">
-                                                    </template>
-                                                </div>
-
-                                                <div v-if="!producto.by_inactive_price_aditional" class="form-group">
-                                                    <label for="">[[ producto.nombre ]] [[
-                                                        producto.descripcion_adicional ]]</label>
-                                                    <template v-if="producto.cantidad==0 || producto.cantidad_cajas==0">
-                                                        <p>No hay producto disponible en esta presentación</p>
-                                                    </template>
-                                                    <template v-else>
-                                                        <input type="number" min="0" value="0" name=""
-                                                            :id="'cantidad_cajas-' + [[ producto.id ]]"
-                                                            class="form-control">
-                                                    </template>
-                                                </div>
-                                                <div v-if="!producto.by_inactive_price_octavia" class="form-group">
-                                                    <label for="">[[ producto.nombre ]] [[ producto.descripcion_prefer
-                                                        ]]</label>
-                                                    <template
-                                                        v-if="producto.cantidad==0 || producto.cantidad_cajas_prefer==0">
-                                                        <p>No hay producto disponible en esta presentación</p>
-                                                    </template>
-                                                    <template v-else>
-                                                        <input type="number" min="0" value="0" name=""
-                                                            :id="'cantidad_xmayor-' + [[ producto.id ]]"
-                                                            class="form-control">
-                                                    </template>
-                                                </div>
-                                                <p
-                                                    :style="producto.cantidad > 24 ? {'color': 'white'} : {'color': 'red'}">
-                                                    [[ producto.cantidad ]] disponibles</p>
-                                                <div class="form-group">
-                                                    <label for="">Especificaciones para la compra</label>
-                                                    <input type="text" name=""
-                                                        :id="'especificaciones-' + [[ producto.id ]]"
-                                                        class="form-control">
-                                                </div>
-                                            </form>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary"
-                                        data-dismiss="modal">Cancelar</button>
-                                    <button type="button" class="btn btn-danger add-carrito"
-                                        onclick="comprarproducto(event)"
-                                        :data-product-serialize="[[ JSON.stringify(producto) ]]" data-dismiss="modal">
-                                        Añadir al carrito</button>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="modal fade" :id="'exampleModal-' + producto.id" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <!-- Modal Content Here -->
                     </div>
-
                 </div>
             </div>
         </div>
@@ -179,145 +73,146 @@
         </div>
     </transition>
 </div>
+
+
 {% block scripts %}
-<script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
-<script type="text/javascript">
-    const API_URL = 'https://www.octaviacolombia.com'
-    const URL_BUCKET = 'https://octavia-col-bucket.s3.amazonaws.com/'
-    var app2 = new Vue({
-        el: '#products',
-        delimiters: ['[[', ']]'],
-        data: function () {
+<script src="https://cdn.jsdelivr.net/npm/vue@3.2.13/dist/vue.global.prod.js"></script>
+<script>
+    const API_URL = 'https://www.octaviacolombia.com';
+    const URL_BUCKET = 'https://octavia-col-bucket.s3.amazonaws.com/';
+
+    const app = Vue.createApp({
+        data() {
             return {
                 productos: [],
                 categories: [],
-                url: API_URL + "/productos/",
+                url: `${API_URL}/productos/`,
                 page: 0,
-                url_service: API_URL + "/lista_productos/?page=",
+                url_service: `${API_URL}/lista_productos/?page=`,
                 last_page: -1,
                 url_images: URL_BUCKET,
                 category_id: 0,
                 search_product: "",
-                validate_user: 0
+                validate_user: 0,
+                loading: false
+            };
+        },
+        computed: {
+            hasProductos() {
+                return this.productos.length > 0;
             }
         },
         methods: {
-            async searchProduct() {
-                try {
-                    this.page = 0;
-                    this.last_page = -1;
-                    this.productos = []
-                    await this.getProducts();
-                } catch (error) {
-                    console.error("Error en la solicitud HTTP:", error);
+            calcularPrecio(producto) {
+                if (producto.logged_user) {
+                    producto.precioMostrar = `$ ${producto.costo_prefer} COP`;
+                } else {
+                    producto.precioMostrar = `$ ${producto.costo} COP`;
                 }
             },
-            async onChangeCategory(event) {
+            async searchProduct() {
                 this.page = 0;
                 this.last_page = -1;
-                this.productos = []
-                this.category_id = event.target.value;
-                console.log("Categoría seleccionada:", this.category_id);
-                await this.getProducts();
+                this.productos = [];
+                this.getProducts();
             },
-            async getCateory() {
-
-                self = this
-                let response = await fetch(API_URL + "/lista_categorias/", {
-                    method: "GET",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                });
-                if (response.status = 200) {
-                    data_response = await response.json()
-                    if (data_response.data && data_response.data.length > 0) {
-                        self.categories = [...self.categories, ...data_response.data]
+            async onChangeCategory() {
+                this.page = 0;
+                this.last_page = -1;
+                this.productos = [];
+                this.getProducts();
+            },
+            async getCategory() {
+                try {
+                    const response = await fetch(`${API_URL}/lista_categorias/`);
+                    if (response.status === 200) {
+                        const data_response = await response.json();
+                        if (data_response.data && data_response.data.length > 0) {
+                            this.categories = data_response.data;
+                        }
                     }
+                } catch (error) {
+                    console.error("Error en la solicitud HTTP:", error);
                 }
             },
             async getProducts() {
+                this.loading = true;
                 try {
-                    let loading = this.$refs.loading;
-                    loading.style.display = "block"
-
-                    // asignar id producto cuando entra al detalle del producto
-                    let producto_id = 0
-                    if (this.$refs.value_product) {
-                        producto_id = this.$refs.value_product.value
-                    }
-
-                    // asignar id marca cuando entra al detalle de la marca
-                    let marca_id = 0
-                    if (this.$refs.value_marca) {
-                        marca_id = this.$refs.value_marca.value
-                    }
+                    const producto_id = this.$refs.value_product ? this.$refs.value_product.value : 0;
+                    const marca_id = this.$refs.value_marca ? this.$refs.value_marca.value : 0;
 
                     if (this.$refs.value_user) {
-                        this.validate_user = 1
+                        this.validate_user = 1;
                     }
 
-                    self = this
-                    let url_page = this.url_service + this.page + "&producto_id=" + producto_id + "&marca_id=" + marca_id + "&category_id=" + this.category_id + "&search_product=" + this.search_product + "&by_producto_prefer=" + this.validate_user
-                    let response = await fetch(url_page, {
-                        method: "GET",
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                    });
-
-                    if (response.status = 200) {
-                        data_response = await response.json()
-                        console.log("Datos de la API:", data_response);
-                        self.last_page = self.page
+                    const url_page = `${this.url_service}${this.page}&producto_id=${producto_id}&marca_id=${marca_id}&category_id=${this.category_id}&search_product=${this.search_product}&by_producto_prefer=${this.validate_user}`;
+                    const response = await fetch(url_page);
+                    if (response.status === 200) {
+                        const data_response = await response.json();
+                        this.last_page = this.page;
                         if (data_response.data && data_response.data.length > 0) {
-                            self.productos = [...self.productos, ...data_response.data]
-                            self.page += 1
-                        }
+                            this.productos.push(...data_response.data);
 
+                            // Llama al método calcularPrecio para calcular el precio de los productos
+                            this.productos.forEach((producto) => {
+                                this.calcularPrecio(producto);
+                            });
+
+                            this.page += 1;
+                        }
                     }
-                    loading.style.display = "none"
                 } catch (error) {
                     console.error("Error en la solicitud HTTP:", error);
                 } finally {
-                    loading.style.display = "none";
+                    this.loading = false;
                 }
             },
-            scroll_infinite() {
+            scrollInfinite() {
                 window.addEventListener('scroll', _.debounce(() => {
                     if (this.$refs.ref_scroll_infinite) {
-                        const { offsetHeight } = this.$refs.ref_scroll_infinite
+                        const { offsetHeight } = this.$refs.ref_scroll_infinite;
                         const { scrollHeight, scrollTop, clientHeight } = document.documentElement;
-                        if (scrollTop + clientHeight >= offsetHeight && this.page != this.last_page) {
+                        if (scrollTop + clientHeight >= offsetHeight && this.page !== this.last_page) {
                             this.getProducts();
-                            price = localStorage.getItem('selected_price')
+                            const price = localStorage.getItem('selected_price');
                             if (price) {
-                                console.log(price)
-                                if (price == 1) {
-                                    document.querySelectorAll(".class_producto_costo").forEach(a => a.style.display = "block");
-                                    document.querySelectorAll(".class_producto_costo_adicional").forEach(a => a.style.display = "none");
-                                    document.querySelectorAll(".class_producto_costo_octavia").forEach(a => a.style.display = "none");
-                                } else if (price == 2) {
-                                    document.querySelectorAll(".class_producto_costo").forEach(a => a.style.display = "none");
-                                    document.querySelectorAll(".class_producto_costo_adicional").forEach(a => a.style.display = "block");
-                                    document.querySelectorAll(".class_producto_costo_octavia").forEach(a => a.style.display = "none");
-                                } else if (price == 3) {
-                                    document.querySelectorAll(".class_producto_costo").forEach(a => a.style.display = "none");
-                                    document.querySelectorAll(".class_producto_costo_adicional").forEach(a => a.style.display = "none");
-                                    document.querySelectorAll(".class_producto_costo_octavia").forEach(a => a.style.display = "block");
+                                if (price === "1") {
+                                    this.showCostoElements();
+                                } else if (price === "2") {
+                                    this.showCostoAdicionalElements();
+                                } else if (price === "3") {
+                                    this.showCostoOctaviaElements();
                                 }
-
                             }
                         }
                     }
                 }, 500));
+            },
+            showCostoElements() {
+                document.querySelectorAll(".class_producto_costo").forEach(a => a.style.display = "block");
+                document.querySelectorAll(".class_producto_costo_adicional").forEach(a => a.style.display = "none");
+                document.querySelectorAll(".class_producto_costo_octavia").forEach(a => a.style.display = "none");
+            },
+            showCostoAdicionalElements() {
+                document.querySelectorAll(".class_producto_costo").forEach(a => a.style.display = "none");
+                document.querySelectorAll(".class_producto_costo_adicional").forEach(a => a.style.display = "block");
+                document.querySelectorAll(".class_producto_costo_octavia").forEach(a => a.style.display = "none");
+            },
+            showCostoOctaviaElements() {
+                document.querySelectorAll(".class_producto_costo").forEach(a => a.style.display = "none");
+                document.querySelectorAll(".class_producto_costo_adicional").forEach(a => a.style.display = "none");
+                document.querySelectorAll(".class_producto_costo_octavia").forEach(a => a.style.display = "block");
             }
         },
-        mounted: function () {
-            this.getProducts()
-            this.getCateory()
-            this.scroll_infinite()
-        },
-    })
+        mounted() {
+            this.getProducts();
+            this.getCategory();
+            this.scrollInfinite();
+        }
+    });
+
+    app.mount("#app");
 </script>
+
+
 {% endblock %}
