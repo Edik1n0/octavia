@@ -1,4 +1,5 @@
 {% load thumbnail octavia_tags humanize %}
+{% load static %}
 <div class="highlights">
     <div class="highlights__titles">
         <p class="highlights__title">Destacados Farsáli</p>
@@ -118,7 +119,7 @@
     <div class="highlights__container owl-carousel" id="highlights-carousel-2">
         {% for i in '12345678' %}
         <div class="highlights__items">
-            <img class="highlights__items--img" src="/static/images/liquid-pro.jpg" alt="">
+            <img class="highlights__items--img" src="{% static 'img/liquid-pro.jpg' %}" alt="">
             <div class="highlights__info">
                 <p class="highlights__info--ref">REF-NY0554</p>
                 <p class="highlights__info--title">Desmaquillante</p>

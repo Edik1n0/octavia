@@ -1,4 +1,5 @@
 {% load octavia_tags %}
+{% load static %}
 <div class="footer">
     <div class="footer__container">
 
@@ -113,7 +114,7 @@
             <div class="footer__groups">
                 <ul class="footer__item--list">
                     <li class="footer__item--whats">
-                        <img src="/static/images/whats.png">
+                        <img src="{% static 'img/whats.png' %}">
                     </li>
                     <li class="footer__item--link" style="margin-top: 40px;">
                         <p>
@@ -141,7 +142,7 @@
 
         <div class="wpp-static">
             <div class="wpp-static__logo" id="wpp-logo">
-                <img src="/static/images/wpp-btn.png" alt="">
+                <img src="{% static 'img/wpp-btn.png' %}" alt="">
             </div>
             <div class="wpp-static__links" id="wpp-list">
                 {% if contacto_telefonos %}
@@ -167,7 +168,7 @@
             {% elif logo_footer.icono_svg %}
                 {% include_svg logo_footer.icono_svg %}
             {% else %}
-                <img src="/static/images/logo_footer.jpg" alt="">
+                <img class="footer__logo--img" src="{% static 'img/logos/logo-completo.png' %}" alt="">
             {% endif %}
         </div>
 
@@ -190,7 +191,7 @@
             {% with enlace=contacto_direccion.enlace|default:'https://www.google.es/maps/place/Fars%C3%A1li+Colombia/@6.2463531,-75.5720988,17z/data=!3m1!4b1!4m5!3m4!1s0x8e44291113ddaf95:0x99de3ac01008e257!8m2!3d6.2463531!4d-75.5699101' direccion=contacto_direccion.valor|default:'Carrera 51 N° 45-70, Piso 9 - Ed. Orión' %}
                 <div class="footer__groups">
                     <div class="footer__item--adress">
-                        <img src="/static/images/addres.png">
+                        <img src="{% static 'img/addres.png' %}">
                         <a 
                             class="footer__item--link" 
                             href="{{ enlace }}"
@@ -208,7 +209,7 @@
             {% with email=contacto_email.valor|default:'info@octaviacolombia.com' %}
                 <div class="footer__groups">
                     <div class="footer__item--email">
-                        <img src="/static/images/email.png">
+                        <img src="{% static 'img/email.png' %}">
                         <a 
                             class="footer__item--link" 
                             href="mailto:{{ email }}" 
