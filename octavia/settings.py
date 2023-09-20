@@ -32,7 +32,7 @@ SECRET_KEY = "django-insecure-og56)sheg&mr2jx)s3$2o(c7w7&eneghk2ds1b(vh(u1x!y&5v
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '127.0.0.1:8000']
+ALLOWED_HOSTS = ['https://octavialingerie-771ec71cf6aa.herokuapp.com/', '127.0.0.1', 'localhost', '127.0.0.1:8000']
 
 # Amazon info
 load_dotenv()
