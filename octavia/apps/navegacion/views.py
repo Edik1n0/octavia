@@ -115,7 +115,6 @@ def dict_producto(producto):
 
     return product_dict
 
-
 def get_productos(**kwargs):
     fields = [
         "id",
@@ -150,7 +149,6 @@ def get_productos(**kwargs):
         )
     return productos
 
-
 def get_generics(**kwargs):
     filter_kwargs = {"activo": True}
     if kwargs.get("filter"):
@@ -160,7 +158,6 @@ def get_generics(**kwargs):
         filter_kwargs.update(kwargs.get("exclude"))
     generics = Generic.objects.filter(**filter_kwargs)
     return generics
-
 
 def get_backgrounds(**kwargs):
     filter_kwargs = {"activo": True}
@@ -172,12 +169,10 @@ def get_backgrounds(**kwargs):
     background = Background.objects.filter(**filter_kwargs).first()
     return background
 
-
 def get_marcas(**kwargs):
     filter_kwargs = {"activo": True}
     marcas = Marca.objects.filter(**filter_kwargs).order_by("orden")
     return marcas
-
 
 def productsView(request):
     page_number = request.GET.get("page") if request.GET.get("producto_id") else None
@@ -325,11 +320,9 @@ def productsView(request):
 
     return JsonResponse({"error": False, "data": list(productos)}, status=200, safe=False)
 
-
 def categoryView(request):
     category = CategoriaProducto.objects.all().values("id", "nombre", "url")
     return JsonResponse({"error": False, "data": list(category)}, status=200, safe=False)
-
 
 class homeView(TemplateView):
     template_name = "base/home.html"
@@ -366,6 +359,7 @@ class homeView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         productos_qs = get_productos()
+        print(productos_qs)  # Imprimir productos en la consola
         user = self.request.session.get("username", None)
         prefer = False
         if user:
@@ -377,7 +371,7 @@ class homeView(TemplateView):
 
         # Obtener la instancia de Pagina
         pagina_home = get_object_or_404(Pagina, pagename='Home')
-
+        
         context.update(
             {
                 "page_name": self.page_name,
@@ -407,6 +401,11 @@ class homeView(TemplateView):
                 "derechos_text": "Texto de derechos que deseas mostrar",
             }
         )
+
+        # Agregar la variable 'logged_user' al contexto
+        logged_user = self.request.user  # Puedes usar self.request para obtener el usuario actual
+        context["logged_user"] = logged_user
+
         return context
 
 class contactoView(TemplateView):
@@ -425,7 +424,6 @@ class contactoView(TemplateView):
             }
         )
         return context
-
 
 class marcasView(TemplateView):
     template_name = "base/marcas.html"
@@ -452,7 +450,6 @@ class marcasView(TemplateView):
         )
         return context
 
-
 class redesView(TemplateView):
     template_name = "base/redes.html"
     page_name = "redes"
@@ -461,7 +458,6 @@ class redesView(TemplateView):
         context = super().get_context_data(**kwargs)
         context.update({"page_name": self.page_name})
         return context
-
 
 class nosotrosView(TemplateView):
     template_name = "base/nosotros.html"
@@ -481,7 +477,6 @@ class nosotrosView(TemplateView):
             }
         )
         return context
-
 
 class tiendaView(TemplateView):
     template_name = "base/tienda.html"
@@ -506,7 +501,6 @@ class tiendaView(TemplateView):
         )
         return context
 
-
 class videosView(TemplateView):
     template_name = "base/videos.html"
     page_name = "videos"
@@ -520,7 +514,6 @@ class videosView(TemplateView):
         )
         context.update({"page_name": self.page_name, "marcas": get_marcas(), "videos": videos})
         return context
-
 
 class politicasView(TemplateView):
     template_name = "base/politicas.html"
@@ -538,7 +531,6 @@ class politicasView(TemplateView):
             }
         )
         return context
-
 
 class productsDetailView(TemplateView):
     template_name = "base/producto_detalle.html"
@@ -579,7 +571,6 @@ class productsDetailView(TemplateView):
             }
         )
         return context
-
 
 def checkoutView(request):
     items = []
@@ -629,7 +620,6 @@ def checkoutView(request):
         },
     )
 
-
 def paymentClienteView(request):
     page_name = "Datos del Cliente"
     json_data = []
@@ -644,7 +634,6 @@ def paymentClienteView(request):
     return render(
         request, "base/payment_client.html", context={"page_name": page_name, "products": json_data}
     )
-
 
 class redirectPaymentView(View):
     page_name = "Confirmacion de Pago"
@@ -727,7 +716,6 @@ class redirectPaymentView(View):
             "base/redirect_payment.html",
             context={"page_name": self.page_name, "venta": venta},
         )
-
 
 class paymentView(View):
     page_name = "Resumen de la compra"
@@ -883,7 +871,6 @@ class paymentView(View):
             },
         )
 
-
 class registeroctavia(TemplateView):
     template_name = "base/register-octavia.html"
     page_name = "Registro Clientes octavia"
@@ -893,7 +880,6 @@ class registeroctavia(TemplateView):
         context.update({"page_name": self.page_name})
         return context
 
-
 class recoverypasswordoctavia(TemplateView):
     template_name = "modules/call-to-action/recovery-password.html"
     page_name = "Recuperacion Contraseña"
@@ -902,7 +888,6 @@ class recoverypasswordoctavia(TemplateView):
         context = super().get_context_data(**kwargs)
         context.update({"page_name": self.page_name})
         return context
-
 
 def paymentCashView(request):
     page_name = "Confirmacion de Pago"
@@ -933,9 +918,7 @@ def paymentCashView(request):
         request, "base/redirect_payment.html", context={"page_name": page_name, "venta": venta}
     )
 
-
 # callback of the payments
-
 
 @csrf_exempt
 def callbackGatewayWompiView(request):
@@ -1003,7 +986,6 @@ def callbackGatewayWompiView(request):
         else:
             return HttpResponse("event not found")
     return HttpResponse("method not allowed")
-
 
 @csrf_exempt
 def callbackGatewayMercadoPagoView(request):

@@ -34,7 +34,7 @@
     <div v-if="productos.length > 0" class="products__container">
         <div class="scroll__animate" ref="ref_scroll_infinite">
             <div v-for="producto in productos" :key="producto.id" class="products__items animado" @click="handleItemClick(producto)" :data-url="url + producto.id" :data-category="producto.categoria_url" :data-name="producto.nombre" :data-id="producto.id" :data-precio="producto.costo">
-                <img class="products__items--img" :src="url_images + producto.imagen" :alt="producto.nombre" :title="producto.nombre" height="400" width="264">
+                <img class="products__items--img" :src="url_img + producto.imagen" :alt="producto.nombre" :title="producto.nombre" height="400" width="264">
 
                 <div class="products__info">
                     <p class="products__info--ref">{{ producto.codigo }}</p>
@@ -90,7 +90,7 @@
                 page: 0,
                 url_service: `${API_URL}/lista_productos/?page=`,
                 last_page: -1,
-                url_images: URL_BUCKET,
+                url_img: URL_BUCKET,
                 category_id: 0,
                 search_product: "",
                 validate_user: 0,

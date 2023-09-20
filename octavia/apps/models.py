@@ -24,7 +24,6 @@ class Contacto(models.Model):
     def __str__(self):
         return self.nombre
 
-
 class RedSocial(models.Model):
     TIPO = [
         ["TW", u"Twitter"],
@@ -85,7 +84,6 @@ class RedSocial(models.Model):
             if self.tipo == tipo[0]:
                 return tipo[1]
 
-
 class Background(models.Model):
     """Model definition for Background."""
 
@@ -145,7 +143,6 @@ class Background(models.Model):
             titulo = self.titulo
         return titulo
 
-
 class Imagen(models.Model):
     """Model definition for Imagen."""
 
@@ -179,7 +176,6 @@ class Imagen(models.Model):
 
     def __str__(self):
         return self.nombre
-
 
 class Generic(models.Model):
     """Model definition for Generic."""
@@ -215,7 +211,6 @@ class Generic(models.Model):
     def __str__(self):
         return self.titulo
 
-
 class GaleriaGeneric(models.Model):
 
     generic = models.ForeignKey(
@@ -244,7 +239,6 @@ class GaleriaGeneric(models.Model):
     def __str__(self):
         return self.nombre
 
-
 class Video(models.Model):
     """Model definition for Video."""
 
@@ -272,7 +266,6 @@ class Video(models.Model):
             {"titulo": self.titulo, "codigo": self.codigo}
         )
 
-
 class Pasarelas(models.Model):
 
     ORIGEN = ((0, _(u"MercadoPago")), (1, _(u"Wompi")), (2, _(u"Epayco")))
@@ -291,7 +284,6 @@ class Pasarelas(models.Model):
 
     def __str__(self):
         return self.nombre
-
 
 class Constante(models.Model):
     u"""
