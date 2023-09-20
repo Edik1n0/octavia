@@ -1,11 +1,12 @@
 {% load thumbnail octavia_tags humanize %}
+{% load static %}
 <div id="products" class="products">
     <div class="filter" id="search">
         <div class="filter__container">
             <h1 class="filter__text">
-                octavia Colombia
+                Octavia Lingerie Colombia
             </h1>
-            <h2>Encuentra productos cosméticos al Mayor y al detal</h2>
+            <h2>Encuentra lencería erótica para todos los gustos</h2>
             <div class="filter__content">
                 <select class="filter__dropdown" name="filter_product" id="id_filter_product"
                     @change="onChangeCategory($event)">
@@ -33,7 +34,7 @@
     {% if productos_id %}
     <input type="hidden" value="{{ productos_id }}" ref="value_product">
     {% endif %}
-    {% if logged_usser %}
+    {% if logged_user %}
     <input type="hidden" value="0" ref="value_user">
     {% endif %}
 
@@ -61,12 +62,14 @@
                         <p class="products__info--price">$ [[ producto.descuento_principal.descuento_unidad ]] COP</p>
                     </template>
                     <template v-else>
-                        {% if logged_usser %}
+                        {% if logged_user %}
                         <p class="products__info--price">$ [[ producto.costo_prefer ]] COP</p>
                         {% else %}
                         <p class="products__info--price class_producto_costo">$ [[ producto.costo ]] COP</p>
-                        <p style="display: none" class="products__info--price class_producto_costo_adicional">$ [[ producto.costo_adicional ]] COP</p>
-                        <p style="display: none" class="products__info--price class_producto_costo_octavia">$ [[ producto.costo_octavia ]] COP
+                        <p style="display: none" class="products__info--price class_producto_costo_adicional">$ [[
+                            producto.costo_adicional ]] COP</p>
+                        <p style="display: none" class="products__info--price class_producto_costo_octavia">$ [[
+                            producto.costo_octavia ]] COP
                         </p>
                         {% endif %}
                     </template>
@@ -177,6 +180,7 @@
     </transition>
 </div>
 {% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
 <script type="text/javascript">
     const API_URL = 'https://www.octaviacolombia.com'
     const URL_BUCKET = 'https://octavia-col-bucket.s3.amazonaws.com/'
@@ -199,16 +203,21 @@
         },
         methods: {
             async searchProduct() {
-                this.page = 0;
-                this.last_page = -1;
-                this.productos = []
-                await this.getProducts();
+                try {
+                    this.page = 0;
+                    this.last_page = -1;
+                    this.productos = []
+                    await this.getProducts();
+                } catch (error) {
+                    console.error("Error en la solicitud HTTP:", error);
+                }
             },
             async onChangeCategory(event) {
                 this.page = 0;
                 this.last_page = -1;
                 this.productos = []
-                this.category_id = event.target.value
+                this.category_id = event.target.value;
+                console.log("Categoría seleccionada:", this.category_id);
                 await this.getProducts();
             },
             async getCateory() {
@@ -228,44 +237,51 @@
                 }
             },
             async getProducts() {
-                let loading = this.$refs.loading;
-                loading.style.display = "block"
+                try {
+                    let loading = this.$refs.loading;
+                    loading.style.display = "block"
 
-                // asignar id producto cuando entra al detalle del producto
-                let producto_id = 0
-                if (this.$refs.value_product) {
-                    producto_id = this.$refs.value_product.value
-                }
-
-                // asignar id marca cuando entra al detalle de la marca
-                let marca_id = 0
-                if (this.$refs.value_marca) {
-                    marca_id = this.$refs.value_marca.value
-                }
-
-                if (this.$refs.value_user) {
-                    this.validate_user = 1
-                }
-
-                self = this
-                let url_page = this.url_service + this.page + "&producto_id=" + producto_id + "&marca_id=" + marca_id + "&category_id=" + this.category_id + "&search_product=" + this.search_product + "&by_producto_prefer=" + this.validate_user
-                let response = await fetch(url_page, {
-                    method: "GET",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                });
-
-                if (response.status = 200) {
-                    data_response = await response.json()
-                    self.last_page = self.page
-                    if (data_response.data && data_response.data.length > 0) {
-                        self.productos = [...self.productos, ...data_response.data]
-                        self.page += 1
+                    // asignar id producto cuando entra al detalle del producto
+                    let producto_id = 0
+                    if (this.$refs.value_product) {
+                        producto_id = this.$refs.value_product.value
                     }
-                    
+
+                    // asignar id marca cuando entra al detalle de la marca
+                    let marca_id = 0
+                    if (this.$refs.value_marca) {
+                        marca_id = this.$refs.value_marca.value
+                    }
+
+                    if (this.$refs.value_user) {
+                        this.validate_user = 1
+                    }
+
+                    self = this
+                    let url_page = this.url_service + this.page + "&producto_id=" + producto_id + "&marca_id=" + marca_id + "&category_id=" + this.category_id + "&search_product=" + this.search_product + "&by_producto_prefer=" + this.validate_user
+                    let response = await fetch(url_page, {
+                        method: "GET",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                    });
+
+                    if (response.status = 200) {
+                        data_response = await response.json()
+                        console.log("Datos de la API:", data_response);
+                        self.last_page = self.page
+                        if (data_response.data && data_response.data.length > 0) {
+                            self.productos = [...self.productos, ...data_response.data]
+                            self.page += 1
+                        }
+
+                    }
+                    loading.style.display = "none"
+                } catch (error) {
+                    console.error("Error en la solicitud HTTP:", error);
+                } finally {
+                    loading.style.display = "none";
                 }
-                loading.style.display = "none"
             },
             scroll_infinite() {
                 window.addEventListener('scroll', _.debounce(() => {
@@ -275,21 +291,21 @@
                         if (scrollTop + clientHeight >= offsetHeight && this.page != this.last_page) {
                             this.getProducts();
                             price = localStorage.getItem('selected_price')
-                            if(price){
+                            if (price) {
                                 console.log(price)
                                 if (price == 1) {
-                                    document.querySelectorAll(".class_producto_costo").forEach(a=>a.style.display = "block");
-                                    document.querySelectorAll(".class_producto_costo_adicional").forEach(a=>a.style.display = "none");
-                                    document.querySelectorAll(".class_producto_costo_octavia").forEach(a=>a.style.display = "none");
-                                  } else if (price == 2) {
-                                    document.querySelectorAll(".class_producto_costo").forEach(a=>a.style.display = "none");
-                                    document.querySelectorAll(".class_producto_costo_adicional").forEach(a=>a.style.display = "block");
-                                    document.querySelectorAll(".class_producto_costo_octavia").forEach(a=>a.style.display = "none");
-                                  } else if (price == 3) {
-                                    document.querySelectorAll(".class_producto_costo").forEach(a=>a.style.display = "none");
-                                    document.querySelectorAll(".class_producto_costo_adicional").forEach(a=>a.style.display = "none");
-                                    document.querySelectorAll(".class_producto_costo_octavia").forEach(a=>a.style.display = "block");
-                                  }
+                                    document.querySelectorAll(".class_producto_costo").forEach(a => a.style.display = "block");
+                                    document.querySelectorAll(".class_producto_costo_adicional").forEach(a => a.style.display = "none");
+                                    document.querySelectorAll(".class_producto_costo_octavia").forEach(a => a.style.display = "none");
+                                } else if (price == 2) {
+                                    document.querySelectorAll(".class_producto_costo").forEach(a => a.style.display = "none");
+                                    document.querySelectorAll(".class_producto_costo_adicional").forEach(a => a.style.display = "block");
+                                    document.querySelectorAll(".class_producto_costo_octavia").forEach(a => a.style.display = "none");
+                                } else if (price == 3) {
+                                    document.querySelectorAll(".class_producto_costo").forEach(a => a.style.display = "none");
+                                    document.querySelectorAll(".class_producto_costo_adicional").forEach(a => a.style.display = "none");
+                                    document.querySelectorAll(".class_producto_costo_octavia").forEach(a => a.style.display = "block");
+                                }
 
                             }
                         }

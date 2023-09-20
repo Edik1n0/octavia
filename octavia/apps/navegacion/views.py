@@ -374,7 +374,7 @@ class homeView(TemplateView):
             **{"filter": {"destacado": True, "by_producto_prefer": prefer}}
         )
         categorias_qs = CategoriaProducto.objects.all()
-        
+
         # Obtener la instancia de Pagina
         pagina_home = get_object_or_404(Pagina, pagename='Home')
 
@@ -388,7 +388,7 @@ class homeView(TemplateView):
                 "background": get_backgrounds(
                     filter={"codigo": self.request.resolver_match.url_name}
                 ),
-                
+
                 # Agregar los datos de la clase Pagina
                 "pageslogan": pagina_home.pageslogan,
                 "pagetitle": pagina_home.pagetitle,
@@ -402,11 +402,12 @@ class homeView(TemplateView):
                 "pageogurl": pagina_home.pageogurl,
                 "pageogimg": pagina_home.pageogimg,
                 "pageogurlsec": pagina_home.pageogurlsec,
+
+                # Agregar la variable 'derechos_text' al contexto
+                "derechos_text": "Texto de derechos que deseas mostrar",
             }
         )
         return context
-
-
 
 class contactoView(TemplateView):
     template_name = "base/contacto.html"

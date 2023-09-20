@@ -13,7 +13,7 @@
                     <ul class="nav__list">
 
                         <!-- Cliente Prefer -->
-                        <!-- {% if not logged_usser %}
+                        <!-- {% if not logged_user %}
                         <li class="nav__item">
                             <a data-toggle="modal" data-target="#modal-prefer" class="icon-diamond"></a>
                         </li>
@@ -165,11 +165,11 @@
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'contacto' %}">Contacto</a>
                 </li>
-                {% if logged_usser %}
+                {% if logged_user %}
                 <li class="nav-item nav-item__user-log">
                     <a class="nav-item__user-log-btn icon-user"></a>
                     <div class="nav-item__user-log-content">
-                        <span class="nav-link">Hola! {{ logged_usser }}, bienvenido</span>
+                        <span class="nav-link">Hola! {{ logged_user }}, bienvenido</span>
                         <a class="nav-link" href="{% url 'logout_octavia' %}">Salir</a>
                     </div>
                 </li>
