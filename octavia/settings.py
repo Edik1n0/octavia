@@ -44,6 +44,7 @@ AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
 AWS_S3_REGION_NAME = 'us-east-2'
 AWS_DEFAULT_ACL = 'public-read'
 USE_I18N = True
+AWS_QUERYSTRING_AUTH = True
 
 # Api keys of mercadopagos
 MERCADOPAGO_URL = "https://api.mercadopago.com/v1/payments/"

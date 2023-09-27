@@ -1,4 +1,5 @@
 {% block content %}
+{% load static %}
 <div id="products" class="products">
     <div class="filter" id="search">
         <div class="filter__container">
@@ -25,23 +26,189 @@
             </div>
         </div>
     </div>
-    <div style="border: 2px solid red;" class="container">
+    <div class="container">
 
         <div class="row">
-            {% for producto in productos %}
-            <div class="col-md-4">
-                <div class="card">
-                    <img src="{{ producto.imagen.url }}" class="card-img-top" alt="{{ producto.nombre }}">
-                    <div class="card-body">
-                        <h5 class="card-title">{{ producto.nombre }}</h5>
-                        <p class="card-text">{{ producto.descripcion }}</p>
-                        <p>Precio: ${{ producto.costo }}</p>
-                        <p>Stock: {{ producto.cantidad }}</p>
-                        <!-- Agrega más detalles del producto aquí -->
+            
+            <div class="d-flex producto__individual">
+                
+                <div class="scroll__animate" ref="ref_scroll_infinite">
+                    {% for producto in productos %}
+                    <div v-for="producto in productos" :key="producto.id" class="products__items animado"
+                        @click="handleItemClick(producto)" :data-url="url + producto.id"
+                        :data-category="producto.categoria_url" :data-name="producto.nombre" :data-id="producto.id"
+                        :data-precio="producto.costo">
+                        <img class="products__items--img" src="https://teacompano-img.s3.amazonaws.com/{{ producto.imagen }}" :alt="producto.nombre"
+                            :title="producto.nombre" height="340" width="340">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ producto.nombre }}</h5>
+                            <p class="card-text">{{ producto.descripcion }}</p>
+                            <p>Precio: ${{ producto.costo|floatformat:"0" }} COP</p>
+                            <a href="/producto-detalle" class="dl--product text-center">
+                                Ver más
+                            </a>
+                            <a href="/add-carrito" class="add__carrito icon-basket">
+                                Agregar al carrito
+                            </a>
+                            <!-- Agrega más detalles del producto aquí -->
+                        </div>
                     </div>
+                    {% endfor %}
                 </div>
+                
             </div>
-            {% endfor %}
+            
         </div>
     </div>
-    {% endblock %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+<script>
+    const URL_BUCKET = 'https://teacompano-img.s3.amazonaws.com/';
+    const { createApp, ref, onMounted, onBeforeUnmount, watchEffect } = Vue;
+
+    createApp({
+        data() {
+            return {
+                a: 1,
+                productos: [],
+                categories: [],
+                url: `${API_URL}/productos/`,
+                page: 0,
+                url_service: `${API_URL}/lista_productos/?page=`,
+                last_page: -1,
+                url_img: URL_BUCKET,
+                category_id: 0,
+                search_product: "",
+                validate_user: 0,
+                loading: false,
+            };
+        },
+        computed: {
+            hasProductos() {
+                return this.productos.length > 0;
+            },
+        },
+        methods: {
+            calcularPrecio(producto) {
+                if (producto.logged_user) {
+                    producto.precioMostrar = `$ ${producto.costo_prefer} COP`;
+                } else {
+                    producto.precioMostrar = `$ ${producto.costo} COP`;
+                }
+            },
+            async searchProduct() {
+                this.page = 0;
+                this.last_page = -1;
+                this.productos = [];
+                this.getProducts();
+            },
+            async onChangeCategory() {
+                this.page = 0;
+                this.last_page = -1;
+                this.productos = [];
+                this.getProducts();
+            },
+            async getCategory() {
+                try {
+                    const response = await fetch(`${API_URL}/lista_categorias/`);
+                    if (response.status === 200) {
+                        const data_response = await response.json();
+                        if (data_response.data && data_response.data.length > 0) {
+                            this.categories = data_response.data;
+                        }
+                    }
+                } catch (error) {
+                    console.error("Error en la solicitud HTTP:", error);
+                }
+            },
+            async getProducts() {
+                this.loading = true;
+                try {
+                    const producto_id = this.$refs.value_product
+                        ? this.$refs.value_product.value
+                        : 0;
+                    const marca_id = this.$refs.value_marca
+                        ? this.$refs.value_marca.value
+                        : 0;
+
+                    if (this.$refs.value_user) {
+                        this.validate_user = 1;
+                    }
+
+                    const url_page = `${this.url_service}${this.page}&producto_id=${producto_id}&marca_id=${marca_id}&category_id=${this.category_id}&search_product=${this.search_product}&by_producto_prefer=${this.validate_user}`;
+                    const response = await fetch(url_page);
+                    if (response.status === 200) {
+                        const data_response = await response.json();
+                        this.last_page = this.page;
+                        if (data_response.data && data_response.data.length > 0) {
+                            this.productos.push(...data_response.data);
+
+                            // Llama al método calcularPrecio para calcular el precio de los productos
+                            this.productos.forEach((producto) => {
+                                this.calcularPrecio(producto);
+                            });
+
+                            this.page += 1;
+                        }
+                    }
+                } catch (error) {
+                    console.error("Error en la solicitud HTTP:", error);
+                } finally {
+                    this.loading = false;
+                }
+            },
+            scrollInfinite() {
+                window.addEventListener(
+                    "scroll",
+                    _.debounce(() => {
+                        if (this.$refs.ref_scroll_infinite) {
+                            const { offsetHeight } = this.$refs.ref_scroll_infinite;
+                            const { scrollHeight, scrollTop, clientHeight } = document.documentElement;
+                            if (
+                                scrollTop + clientHeight >= offsetHeight &&
+                                this.page !== this.last_page
+                            ) {
+                                this.getProducts();
+                                const price = localStorage.getItem("selected_price");
+                                if (price) {
+                                    if (price === "1") {
+                                        this.showCostoElements();
+                                    } else if (price === "2") {
+                                        this.showCostoAdicionalElements();
+                                    } else if (price === "3") {
+                                        this.showCostoOctaviaElements();
+                                    }
+                                }
+                            }
+                        }
+                    }, 500)
+                );
+            },
+            showCostoElements() {
+                document.querySelectorAll(".class_producto_costo").forEach((a) => (a.style.display = "block"));
+                document.querySelectorAll(".class_producto_costo_adicional").forEach((a) => (a.style.display = "none"));
+                document.querySelectorAll(".class_producto_costo_octavia").forEach((a) => (a.style.display = "none"));
+            },
+            showCostoAdicionalElements() {
+                document.querySelectorAll(".class_producto_costo").forEach((a) => (a.style.display = "none"));
+                document.querySelectorAll(".class_producto_costo_adicional").forEach((a) => (a.style.display = "block"));
+                document.querySelectorAll(".class_producto_costo_octavia").forEach((a) => (a.style.display = "none"));
+            },
+            showCostoOctaviaElements() {
+                document.querySelectorAll(".class_producto_costo").forEach((a) => (a.style.display = "none"));
+                document.querySelectorAll(".class_producto_costo_adicional").forEach((a) => (a.style.display = "none"));
+                document.querySelectorAll(".class_producto_costo_octavia").forEach((a) => (a.style.display = "block"));
+            }
+        },
+        mounted() {
+            this.getProducts();
+            this.getCategory();
+            this.scrollInfinite();
+        }
+    }).mount("#app");
+</script>
+
+{% endblock %}

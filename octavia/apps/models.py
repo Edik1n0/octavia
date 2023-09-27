@@ -3,6 +3,7 @@ import ast
 import dateutil.parser
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from storages.backends.s3boto3 import S3Boto3Storage
 from octavia.apps.inventario.models import Producto
 from ckeditor.fields import RichTextField
 

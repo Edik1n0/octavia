@@ -4,9 +4,13 @@ from django.db import models
 from django.db.models import Q
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
+from storages.backends.s3boto3 import S3Boto3Storage
 
 # from transmeta import TransMeta
 
+class S3ProductImage(S3Boto3Storage):
+    location = 'teacompano-img'
+    file_overwrite = False
 
 class CategoriaProducto(models.Model):
 
@@ -18,7 +22,7 @@ class CategoriaProducto(models.Model):
     url = models.SlugField(_(u"Url"), max_length=100)
     imagen = models.ImageField(
         u"Foto categoría",
-        upload_to="uploads/inventario/imagenes/",
+        upload_to="teacompano-img/",
         default="",
         blank=True,
         null=True,
@@ -33,12 +37,8 @@ class CategoriaProducto(models.Model):
             "id",
         )
 
-    def __unicode__(self):
-        return self.nombre
-
     def __str__(self):
         return self.nombre
-
 
 class Marca(models.Model):
     """Model definition for Marca."""
@@ -75,12 +75,11 @@ class Marca(models.Model):
                 return choice[1]
         return ""
 
-
 class ImagenBase(models.Model):
     nombre = models.CharField(_(u"Nombre"), max_length=100, blank=True, null=False, default="")
     imagen = models.ImageField(
         _(u"Imagen"),
-        upload_to="uploads/inventario/imagenes/",
+        upload_to="teacompano-img/",
         max_length=200,
         blank=True,
         null=True,
@@ -98,7 +97,6 @@ class ImagenBase(models.Model):
 
     def __unicode__(self):
         return self.nombre
-
 
 class Producto(models.Model):
 
@@ -138,7 +136,8 @@ class Producto(models.Model):
     )
     imagen = models.ImageField(
         u"Foto",
-        upload_to="uploads/inventario/imagenes/",
+        storage=S3ProductImage(),
+        upload_to="teacompano-img/",
         default="",
         blank=True,
         null=True,
@@ -189,22 +188,19 @@ class Producto(models.Model):
         # translate = ('nombre', 'url',)
         ordering = ("orden",)
 
-    def __unicode__(self):
-        return self.nombre
-
     def __str__(self):
         return self.nombre
 
     @property
     def descuento_principal(self):
         try:
+            # Utiliza Q para combinar las condiciones en una consulta más legible.
             discount = Descuento.objects.filter(
-                (Q(categorias_productos_id=self.categoria.id)) | (Q(productos__id=self.id))
+                Q(categorias_productos_id=self.categoria.id) | Q(productos__id=self.id)
             ).first()
-            return discount.porcentaje
-        except Exception:
+            return discount.porcentaje if discount else 0
+        except Descuento.DoesNotExist:
             return 0
-
 
 class GaleriaProducto(ImagenBase, models.Model):
     producto = models.ForeignKey(
@@ -242,7 +238,6 @@ class GaleriaProducto(ImagenBase, models.Model):
         verbose_name_plural = _(u"Galería de Productos")
 
         ordering = ("-updated_at",)
-
 
 class Comentario(models.Model):
     """Model definition for Comentario."""
@@ -282,7 +277,6 @@ class Comentario(models.Model):
 
     def __str__(self):
         return self.producto.nombre
-
 
 class Descuento(models.Model):
 

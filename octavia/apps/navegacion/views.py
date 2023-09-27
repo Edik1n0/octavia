@@ -336,12 +336,12 @@ class homeView(TemplateView):
             prefer = True
         my_model = productos_qs.filter(destacado=True, by_producto_prefer=prefer)
         number_of_item = 6
-        paginatorr = Paginator(my_model, number_of_item)
-        first_page = paginatorr.page(1).object_list
-        page_range = paginatorr.page_range
+        paginator = Paginator(my_model, number_of_item)
+        first_page = paginator.page(1).object_list
+        page_range = paginator.page_range
         context.update(
             {
-                "paginatorr": paginatorr,
+                "paginator": paginator,
                 "first_page": first_page,
                 "page_range": page_range,
                 "marcas": get_marcas(),
@@ -352,7 +352,7 @@ class homeView(TemplateView):
         )
         if self.request.method == "POST":
             page_n = self.request.POST.get("page_n", None)
-            results = list(paginatorr.page(page_n).object_list)
+            results = list(paginator.page(page_n).object_list)
             return JsonResponse({"results": results})
         return context
 
