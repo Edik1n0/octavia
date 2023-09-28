@@ -10,7 +10,7 @@ from django.http import Http404, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
-from django.views.generic import ListView, TemplateView
+from django.views.generic import ListView, TemplateView, DetailView
 from django.views.generic.base import View
 from octavia.apps.clientes.models import Cliente
 from octavia.apps.models import Constante
@@ -346,8 +346,9 @@ class homeView(TemplateView):
                 "page_range": page_range,
                 "marcas": get_marcas(),
                 "background": get_backgrounds(
-                    filter={"codigo": self.request.resolver_match.url_name}
+                    filter={"codigo": self.request.resolver_match.url_name},
                 ),
+                "productos_con_url": [{"nombre": producto.nombre, "producturl": producto.producturl} for producto in productos_qs],
             }
         )
         if self.request.method == "POST":
@@ -371,6 +372,7 @@ class homeView(TemplateView):
 
         # Obtener la instancia de Pagina
         pagina_home = get_object_or_404(Pagina, pagename='Home')
+        productos_qs = Producto.objects.all()
         
         context.update(
             {
@@ -532,44 +534,24 @@ class politicasView(TemplateView):
         )
         return context
 
-class productsDetailView(TemplateView):
-    template_name = "base/producto_detalle.html"
-    page_name = "Producto Detalle"
-    producto = None
+class productsDetailView(DetailView):
+    model = Producto
+    template_name = 'base/producto_detalle.html'
+    context_object_name = 'producto'
 
-    def dispatch(self, request, *args, **kwargs):
-        self.producto = get_object_or_404(Producto, pk=kwargs.get("id_producto"))
-        return super(productsDetailView, self).dispatch(request, *args, **kwargs)
+    def get_object(self):
+        return get_object_or_404(Producto, producturl=self.kwargs['producturl'])
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        try:
-            producto = dict_producto(self.producto)
-            user = self.request.session.get("username", None)
-            if producto["by_producto_prefer"] == True and not user:
-                producto = None
-        except Producto.DoesNotExist:
-            producto = None
+        context['keywords'] = self.object.productkeywords
+        context['mdescription'] = self.object.productmetadesc
+        context['ogurl'] = self.object.productogurl
+        context['ogimg'] = self.object.productogimg
+        context['ogtitle'] = self.object.productogtitle
+        context['ogurlimg'] = self.object.productogurlsec
+        context['ogdesc'] = self.object.productogdesc
 
-        if not producto:
-            raise Http404("Marca no existe")
-        productos_hg = get_productos(**{"filter": {"destacado": True}})
-        # categorias_qs = CategoriaProducto.objects.all()
-        producto["calificacion_cantidad"] = (
-            range(0, producto["calificacion"] + 1) if (producto["calificacion"]) else []
-        )
-        context.update(
-            {
-                "page_name": self.page_name,
-                "producto": producto,
-                "marcas": get_marcas(),
-                "productos_id": producto["id"],
-                "productos_destacados": productos_hg,
-                "background": get_backgrounds(
-                    filter={"codigo": self.request.resolver_match.url_name}
-                ),
-            }
-        )
         return context
 
 def checkoutView(request):

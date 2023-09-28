@@ -1,4 +1,12 @@
 {% extends "base/base.html" %}
+{% block ogdesc %}{{ pageogdesc }}{% endblock %}
+{% block oguimg %}{{ pageogimg }}{% endblock %}
+{% block ogurls %}{{ pageogurl }}{% endblock %}
+{% block ogurlimg %}{{ pageogurlsec }}{% endblock %}
+
+{% block mdescription %}{{ pagemetadesc }}{% endblock %}
+{% block keywords %}{{ pagekeywords }}{% endblock %}
+{% block title %}{{ pagemetatitle }}{% endblock %}
 
 {% block extracaptcha %}
     <script src="https://www.google.com/recaptcha/api.js?render={{ GOOGLE_KEY_CAPTCHA_V3 }}&hl=es"></script>

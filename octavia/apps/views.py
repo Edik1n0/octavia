@@ -55,12 +55,14 @@ class ComentarioViewMixin(FormMixin, productsDetailView):
 
     def get_form_kwargs(self):
         kwargs = super(ComentarioViewMixin, self).get_form_kwargs()
-        kwargs.update(
-            {
-                "request": self.request,
-                "producto_id": self.producto.id,
-            }
-        )
+        
+        # Verifica si self.producto es None
+        if self.producto:
+            kwargs["producturl"] = self.producto.producturl
+        else:
+            # Si self.producto es None, establece producturl en None o algún valor predeterminado
+            kwargs["producturl"] = None  # O puedes establecer un valor predeterminado aquí
+        
         return kwargs
 
     def get_success_url(self):

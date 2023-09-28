@@ -35,10 +35,10 @@ class ComentarioForm(forms.ModelForm):
             self.fields[field].label = ""
 
         self.request = kwargs.pop("request", None)
-        self.producto_id = kwargs.pop("producto_id", None)
+        self.producturl = kwargs.pop("producturl", None)
         super(ComentarioForm, self).__init__(*args, **kwargs)
-        if self.producto_id:
-            self.fields["producto"].initial = get_object_or_404(Producto, pk=self.producto_id)
+        if self.producturl:
+            self.fields["producto"].initial = get_object_or_404(Producto, pk=self.producturl)
         erase_field("producto")
         for visible in self.visible_fields():
             visible.field.widget.attrs["class"] = "form-control"

@@ -44,7 +44,7 @@
                             <h5 class="card-title">{{ producto.nombre }}</h5>
                             <p class="card-text">{{ producto.descripcion }}</p>
                             <p>Precio: ${{ producto.costo|floatformat:"0" }} COP</p>
-                            <a href="/producto-detalle" class="dl--product text-center">
+                            <a href="{% url 'productsDetailView' producturl=producto.producturl %}" class="dl--product text-center">
                                 Ver más
                             </a>
                             <a href="/add-carrito" class="add__carrito icon-basket">

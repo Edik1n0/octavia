@@ -1,4 +1,5 @@
 {% load thumbnail octavia_tags humanize %}
+{% load static %}
 <div class="product__detail">
     <div class="container">
 
@@ -31,10 +32,10 @@
                             <!-- Precio normal -->
                             <div class="div-box-price class_producto_costo">
                                 {% if producto.descuento_principal > 0 and producto.descuento_unidad > 0 %}
-                                    <p class="products__info--price-discount">$ {{ producto.costo|floatformat:"0"|intcomma }} COP</p>
-                                    <p class="product__detail--price">$ {{ producto.descuento_unidad|floatformat:"0"|intcomma }} COP</p>
+                                    <p class="products__info--price-discount">$ {{ producto.costo|floatformat:"0" }} COP</p>
+                                    <p class="product__detail--price">$ {{ producto.descuento_unidad|floatformat:"0" }} COP</p>
                                 {% else %}
-                                    <p class="product__detail-price">$ {{ producto.costo|floatformat:"0"|intcomma }} COP</p>
+                                    <p class="product__detail-price">$ {{ producto.costo|floatformat:"0" }} COP</p>
                                 {% endif %}
                                 <p class="products__detail--paragraph">{{ producto.descripcion_no_prefer|safe }}</p>
                                 <div style="width: 30%;">
@@ -49,10 +50,10 @@
                             {% if not producto.by_inactive_price_aditional %}
                                 <div class="div-box-price class_producto_costo_adicional">
                                     {% if producto.descuento_principal > 0 and producto.descuento_caja > 0 %}
-                                        <p class="products__info--price-discount">$ {{ producto.costo_adicional|floatformat:"0"|intcomma }} COP</p>
-                                        <p class="product__detail--price">$ {{ producto.descuento_caja|floatformat:"0"|intcomma }} COP</p>
+                                        <p class="products__info--price-discount">$ {{ producto.costo_adicional|floatformat:"0" }} COP</p>
+                                        <p class="product__detail--price">$ {{ producto.descuento_caja|floatformat:"0" }} COP</p>
                                     {% else %}
-                                        <p class="product__detail-price">$ {{ producto.costo_adicional|floatformat:"0"|intcomma }} COP</p>
+                                        <p class="product__detail-price">$ {{ producto.costo_adicional|floatformat:"0" }} COP</p>
                                     {% endif %}
                                     <p class="products__detail--paragraph">{{ producto.descripcion_adicional|safe }}</p>
                                     <div style="width: 30%;" >
@@ -68,10 +69,10 @@
                             {% if not producto.by_inactive_price_octavia %}
                             <div class="div-box-price class_producto_costo_octavia">
                                 {% if producto.descuento_principal > 0 and producto.descuento_mayor > 0 %}
-                                    <p class="products__info--price-discount">$ {{ producto.costo_octavia|floatformat:"0"|intcomma }} COP</p>
-                                    <p class="product__detail--price">$ {{ producto.descuento_mayor|floatformat:"0"|intcomma }} COP</p>
+                                    <p class="products__info--price-discount">$ {{ producto.costo_octavia|floatformat:"0" }} COP</p>
+                                    <p class="product__detail--price">$ {{ producto.descuento_mayor|floatformat:"0" }} COP</p>
                                 {% else %}
-                                    <p class="product__detail-price">$ {{ producto.costo_octavia|floatformat:"0"|intcomma }} COP</p>
+                                    <p class="product__detail-price">$ {{ producto.costo_octavia|floatformat:"0" }} COP</p>
                                 {% endif %}
                                 <p class="products__detail--paragraph">{{ producto.descripcion_prefer|safe }}</p>
                                 <div style="width: 30%;" >
@@ -130,11 +131,10 @@
                 </div>
 
                 <div class="detail__options--face">
-                    <!-- <a href="javascript: void(0);" onclick="window.open('https://www.facebook.com/sharer/sharer.php?u={% if request.is_secure %}https://{% else %}http://{% endif %}{{ request.META.HTTP_HOST }}{% url 'producto_detalle' producto.id %}','ventanacompartir', 'toolbar=0, status=0, width=650, height=450');"> -->
                     <a target="_blank" style="text-decoration: none;" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fwww.octaviacolombia.com%2Fproductos%2F{{ producto.id }}&amp;src=sdkpreparse" class="fb-xfbml-parse-ignore" alt="Facebook Compartir">
-                        <img src="{% static 'img/facebook.png' %}" style="cursor: pointer;" data-href="{% url 'producto_detalle' producto.id %}" data-layout="button_count" data-size="large">
+                        <img src="{% static 'img/facebook.png' %}" style="cursor: pointer;" data-href="{% url 'productsDetailView' producto.id %}" data-layout="button_count" data-size="large">
                     </a>
-                    <a  href="whatsapp://send?text={% if request.is_secure %}https://{% else %}http://{% endif %}{{ request.META.HTTP_HOST }}{% url 'producto_detalle' producto.id %}"
+                    <a  href="whatsapp://send?text={% if request.is_secure %}https://{% else %}http://{% endif %}{{ request.META.HTTP_HOST }}{% url 'productsDetailView' producturl=producto.producturl %}"
                     data-action="share/whatsapp/share" target="_blank">
                         <img src="{% static 'img/whatsapp.png' %}" alt="">
                     </a>

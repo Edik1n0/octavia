@@ -1,5 +1,6 @@
 # coding: utf-8
 from django.urls import path
+from django.views.generic.base import TemplateView
 
 from ..views import (
     ClienteViewMixin,
@@ -39,7 +40,7 @@ urlpatterns = [
     path("nosotros/", nosotrosView.as_view(), name="nosotros"),
     path("redes/", redesView.as_view(), name="redes"),
     path("politicas/", politicasView.as_view(), name="politicas"),
-    path('productos/<slug:producturl>/', ComentarioViewMixin.as_view(), name="producto_detalle"),
+    path('tienda/<slug:producturl>/', ComentarioViewMixin.as_view(), name="productsDetailView"),
     path("marcas/<pk>/", marcasView.as_view(), name="marcas"),
     path("tienda/", tiendaView.as_view(), name="tienda"),
     path("compra/", checkoutView, name="checkout"),

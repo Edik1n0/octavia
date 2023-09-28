@@ -1,6 +1,7 @@
 # coding: utf-8
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
+from ckeditor.fields import RichTextField
 from django.db.models import Q
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
@@ -116,8 +117,19 @@ class Producto(models.Model):
         verbose_name=_(u"Categoría Producto"),
         on_delete=models.CASCADE,
     )
+    # Elementos del header del producto
+    productmetadesc = models.CharField(max_length=200, verbose_name="Meta descripción del Producto", default="")
+    productkeywords = RichTextField(verbose_name="Palabras clave del Producto", default="")
+    productbanner = models.ImageField(upload_to='imagenes-decortinas/', verbose_name="Imagen Banner del Producto", default='/productos/static/img/default.jpg')
+    productbannermov = models.ImageField(upload_to='imagenes-decortinas/', verbose_name="Imagen Banner del Producto en Móvil", default='/productos/static/img/default-mov.jpg')
+    # Elementos OG del producto
+    productogdesc = models.CharField(max_length=200, verbose_name="Descripción OG del Producto", default="")
+    productogtitle = models.CharField(max_length=200, verbose_name="Metatítulo OG del Producto", default="")
+    productogurl = models.CharField(max_length=200, verbose_name="Url OG del Producto", default="")
+    productogimg = models.CharField(max_length=200, verbose_name="Url OG Microformato del Producto", default="")
+    productogurlsec = models.CharField(max_length=200, verbose_name="Url OG Segura del Producto", default="")
     codigo = models.CharField(_(u"Referencia"), max_length=39, unique=True)
-    url = models.SlugField(_(u"Url"), max_length=100, blank=True, null=True, default="")
+    producturl = models.CharField(max_length=200, verbose_name="Url producto detalle", default="url-default")
     nombre = models.CharField(_(u"Nombre"), max_length=75)
     descripcion = models.TextField(_(u"Descripcion"), blank=True, null=True)
     codigo_video = models.CharField(

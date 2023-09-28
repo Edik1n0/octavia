@@ -36,7 +36,7 @@ class CategoriaProductoAdmin(admin.ModelAdmin):
                 "fields": (
                     "nombre",
                     "descripcion",
-                    "url",
+                    "producturl",
                     "imagen",
                     ("orden",),
                 )
@@ -173,7 +173,7 @@ class ProductoAdmin(admin.ModelAdmin):
             {
                 "fields": (
                     "nombre",
-                    "url",
+                    "producturl",
                     "descripcion_adicional",
                     "descripcion_no_prefer",
                     "descripcion_prefer",
@@ -184,7 +184,7 @@ class ProductoAdmin(admin.ModelAdmin):
         ],
     ]
 
-    prepopulated_fields["url"] = ("nombre",)
+    prepopulated_fields["producturl"] = ("nombre",)
 
 
 admin.site.register(Producto, ProductoAdmin)
